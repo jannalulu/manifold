@@ -298,7 +298,7 @@ function CapabilityCard({
                 {getCompanyLogo(topCompanies[0].text) ? (
                   <div className="flex flex-col items-center">
                     <div className="h-12 w-12 mb-2 flex items-center justify-center text-primary-600">
-                      {React.createElement(getCompanyLogo(topCompanies[0].text)!, { 
+                      {React.createElement(getCompanyLogo(topCompanies[0].text) as React.FC<{className?: string}>, { 
                         className: "w-10 h-10" 
                       })}
                     </div>
@@ -326,7 +326,7 @@ function CapabilityCard({
                 {getCompanyLogo(topCompanies[1].text) ? (
                   <div className="flex flex-col items-center">
                     <div className="h-10 w-10 mb-1 flex items-center justify-center text-primary-600">
-                      {React.createElement(getCompanyLogo(topCompanies[1].text)!, { 
+                      {React.createElement(getCompanyLogo(topCompanies[1].text) as React.FC<{className?: string}>, { 
                         className: "w-8 h-8" 
                       })}
                     </div>
@@ -346,11 +346,11 @@ function CapabilityCard({
             </div>
             
             {/* Probability Bar */}
-            <div className="mt-4 h-2.5 w-full rounded-full bg-ink-200 overflow-hidden">
+            <div className="mt-4 h-1.5 w-full rounded-full bg-ink-200 overflow-hidden">
               {/* Calculate the width percentage based on probabilities */}
               <div 
                 className="h-full bg-primary-600" 
-                style={{ 
+                style={{
                   width: `${(topCompanies[0].probability / (topCompanies[0].probability + topCompanies[1].probability)) * 100}%` 
                 }}
               />
