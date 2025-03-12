@@ -17,7 +17,7 @@ import { SiOpenai, SiGooglegemini, SiAnthropic} from 'react-icons/si'
 import { RiTwitterXLine } from 'react-icons/ri'
 import { LuLink, LuInfo } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
-import { PiBird } from "react-icons/pi"
+import { PiBirdBold } from "react-icons/pi"
 
 const ENDPOINT = 'ai'
 
@@ -502,7 +502,7 @@ function CapabilityCard({
                   {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
                   {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
                   {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
-                  {title.includes('Qwen') && <PiBird className="h-5 w-5" />}
+                  {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
                 </div>
               )}
               <h3 className={`font-semibold ${getAccentColor()} text-lg`}>{title}</h3>
@@ -706,7 +706,7 @@ function CapabilityCard({
                 {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
                 {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
                 {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5 opacity-60" />}
-                {title.includes('Qwen') && <PiBird className="h-5 w-5 opacity-60" />}
+                {title.includes('Qwen') && <PiBirdBold className="h-5 w-5 opacity-60" />}
               </div>
             )}
             <h3 className={`font-semibold ${getAccentColor()} text-xl`}>{title}</h3>
