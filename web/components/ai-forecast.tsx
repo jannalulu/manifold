@@ -486,7 +486,7 @@ function CapabilityCard({
     
     return (
       <ClickFrame
-        className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[0_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[0_2px_4px_rgba(0,0,0,0.2)] relative ${className}`}
+        className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative ${className}`}
         onClick={handleClick}
       >
         <Col className="h-full space-y-2">
@@ -597,7 +597,7 @@ function CapabilityCard({
     
     return (
       <ClickFrame
-        className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[0_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[0_2px_4px_rgba(0,0,0,0.2)] relative ${className}`}
+        className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative ${className}`}
         onClick={handleClick}
       >
         <Col className="h-full space-y-2">
@@ -664,7 +664,7 @@ function CapabilityCard({
   
   return (
     <ClickFrame
-      className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[0_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[0_2px_4px_rgba(0,0,0,0.2)] relative ${className}`}
+      className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative ${className}`}
       onClick={handleClick}
     >
       <Col className="h-full">
@@ -808,7 +808,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       
       {/* Card Categories */}
       {Object.entries(typeLabels).map(([type, label], index) => (
-        <Col key={type} className={`${index > 0 ? 'mt-12 pt-8 border-t border-ink-200 dark:border-ink-800' : 'mt-6'}`} id={type}>
+        <Col key={type} className={`${index > 0 ? 'mt-12 pt-8 border-t border-ink-200 dark:border-ink-800/50' : 'mt-6'}`} id={type}>
           <div className="mb-3">
             <Row className="items-center justify-between">
               <div>
@@ -840,7 +840,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             </Row>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative [&>*:not(:last-child)]:after:hidden md:[&>*:not(:last-child)]:after:block md:[&>*:not(:last-child)]:after:absolute md:[&>*:not(:last-child)]:after:top-1/2 md:[&>*:not(:last-child)]:after:-translate-y-1/2 md:[&>*:not(:last-child)]:after:right-[-1.5px] md:[&>*:not(:last-child)]:after:h-4/5 md:[&>*:not(:last-child)]:after:w-[1px] md:[&>*:not(:last-child)]:after:bg-ink-200/10 dark:md:[&>*:not(:last-child)]:after:bg-ink-700/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative [&>*:not(:last-child)]:after:hidden md:[&>*:not(:last-child)]:after:block md:[&>*:not(:last-child)]:after:absolute md:[&>*:not(:last-child)]:after:top-1/2 md:[&>*:not(:last-child)]:after:-translate-y-1/2 md:[&>*:not(:last-child)]:after:right-[-1.5px] md:[&>*:not(:last-child)]:after:h-4/5 md:[&>*:not(:last-child)]:after:w-[1px] md:[&>*:not(:last-child)]:after:bg-ink-200/10 dark:md:[&>*:not(:last-child)]:after:bg-ink-700/5">
             {capabilityCardsByType[type]?.map((card, idx) => {
               // Special sizing for "monthly" type cards
               let cardClassName = "";
