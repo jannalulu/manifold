@@ -559,7 +559,7 @@ function CapabilityCard({
   }
   
   // Create click handler for the card
-  const clickHandler = createContractClickHandler(contract, liveContract, title, marketId, displayType)
+  const clickHandler = createContractClickHandler(contract ?? null, liveContract, title, marketId, displayType)
   
   if (displayType === 'top-two-mcq') {
     return (
@@ -656,7 +656,7 @@ function CapabilityCard({
               <CardTitle 
                 title={title} 
                 type={type} 
-                showModelIcon={type === 'releases'} 
+                showModelIcon
               />
             </div>
             
