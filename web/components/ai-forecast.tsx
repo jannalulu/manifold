@@ -79,7 +79,7 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'AiderBench',
     description: 'Highest ranked model on Aider',
-    marketId: '0t8A5ZA0zQ', // Top March
+    marketId: 'LsZPyLPI82', // Top March id: 0t8A5ZA0zQ
     type: 'monthly',
     displayType: 'top-one-mcq',
   },
