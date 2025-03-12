@@ -9,7 +9,6 @@ import { getNumberExpectedValue } from 'common/src/number'
 import { Clock } from 'web/components/clock/clock'
 import { NumericBetPanel } from 'web/components/answers/numeric-bet-panel'
 import { ClickFrame } from 'web/components/widgets/click-frame'
-import { HorizontalContractsCarousel } from './horizontal-contracts-carousel'
 import Link from 'next/link'
 import { formatPercent } from 'common/util/format'
 import { getDisplayProbability } from 'common/calculate'
@@ -226,40 +225,6 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   }
 ]
 
-// Categories for AI markets
-export const AI_CATEGORIES = [
-  {
-    id: 'milestones',
-    title: 'AI Milestones',
-    description: 'Key achievements and breakthroughs in AI development',
-    contractIds: [
-      'LsZPyLPI82', // Best company by end of April
-      'OS06sL6OgU', // Grammarly replacement
-      'LNdOg08SsU', // Frontier Math score by end of 2025
-    ],
-  },
-  {
-    id: 'impact',
-    title: 'Economic & Social Impact',
-    description: 'How AI is changing our world',
-    contractIds: [
-      'placeholder-4', // AI in healthcare (placeholder ID)
-      'placeholder-5', // AI job displacement (placeholder ID)
-      'placeholder-6', // AI regulation (placeholder ID)
-    ],
-  },
-  {
-    id: 'risks',
-    title: 'AI Risks & Safety',
-    description: 'Potential concerns and safety measures',
-    contractIds: [
-      'placeholder-7', // AI alignment breakthroughs (placeholder ID)
-      'placeholder-8', // AI risk reduction (placeholder ID)
-      'placeholder-9', // Existential risk from AI (placeholder ID)
-    ],
-  }
-]
-
 export interface AIForecastProps {
   whenAgi: CPMMNumericContract | null
   contracts: Contract[]
@@ -280,7 +245,7 @@ function CardBase({
 }) {
   return (
     <ClickFrame
-      className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 
+      className={`group cursor-pointer rounded-lg p-4 border border-ink-200 dark:border-ink-300 bg-canvas-0 
       transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 ${minHeight}
       shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] 
       relative ${CARD_BG_PATTERN} ${className}`}
@@ -872,14 +837,9 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
           <div className="mb-3">
             <Row className="items-center justify-between">
               <div>
-                <h3 className={`items-center gap-1 font-semibold text-xl ${
-                  type === 'releases' ? 'text-amber-600' :
-                  type === 'benchmark' ? 'text-teal-600' :
-                  type === 'prize' ? 'text-amber-600' :
-                  type === 'misuse' ? 'text-rose-600' :
-                  type === 'human-comparison' ? 'text-purple-600' :
-                  'text-primary-600'
-                }`}>{info.label}</h3>
+                <h3 className={`items-center gap-1 font-semibold text-xl ${getAccentColor(type)}`}>
+                  {info.label}
+                </h3>
                 <p className="text-ink-500 text-sm mt-1">
                   {info.description}
                 </p>
@@ -895,7 +855,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             </Row>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative [&>*:not(:last-child)]:after:hidden md:[&>*:not(:last-child)]:after:block md:[&>*:not(:last-child)]:after:absolute md:[&>*:not(:last-child)]:after:top-1/2 md:[&>*:not(:last-child)]:after:-translate-y-1/2 md:[&>*:not(:last-child)]:after:right-[-1.5px] md:[&>*:not(:last-child)]:after:h-4/5 md:[&>*:not(:last-child)]:after:w-[1px] md:[&>*:not(:last-child)]:after:bg-ink-200/10 dark:md:[&>*:not(:last-child)]:after:bg-ink-700/5">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative rounded-lg ${CARD_BG_PATTERN}`}>
             {capabilityCardsByType[type]?.map((card, idx) => {
               // Special sizing for "monthly" type cards
               let cardClassName = "";
@@ -927,7 +887,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       {liveWhenAgi && (
         <CardBase
           onClick={() => window.location.href = contractPath(liveWhenAgi)}
-          className="fade-in group relative"
+          className="fade-in group relative bg-canvas-50"
           minHeight=""
         >
           <Row className="justify-between">
