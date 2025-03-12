@@ -736,7 +736,7 @@ function CapabilityCard({
             <div className="absolute top-0 right-0">
               <Tooltip 
                 title={title} 
-                description={benchmarkDescriptions[title] || `Oh yay you must Google for more information about this ${title} benchmark.`} 
+                description={benchmarkDescriptions[title] || `Oh yay you must Google for more information about ${title}.`} 
               />
             </div>
           )}
@@ -827,14 +827,32 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     return grouped
   }, {} as Record<string, typeof AI_CAPABILITY_CARDS>)
   
-  // Type labels for UI
-  const typeLabels = {
-    'monthly': 'Best Model in March',
-    'releases': 'Model Release Dates',
-    'benchmark': 'Benchmarks',
-    'prize': 'Prizes',
-    'misuse': 'AI Misuse',
-    'human-comparison': 'Comparisons to Humans'
+  // Type information for UI
+  const typeInfo = {
+    'monthly': {
+      label: 'Best Model in March',
+      description: 'What\'s the best model this month?'
+    },
+    'releases': {
+      label: 'Model Release Dates',
+      description: 'When will [insert lab here] release the next model?'
+    },
+    'benchmark': {
+      label: 'Benchmarks',
+      description: 'How smart will the LLMs be?'
+    },
+    'prize': {
+      label: 'Prizes',
+      description: 'Will any model claim this prize?'
+    },
+    'misuse': {
+      label: 'AI Misuse',
+      description: 'How misaligned are these models?'
+    },
+    'human-comparison': {
+      label: 'Comparisons to Humans',
+      description: 'Do we still have a comparative advantage?'
+    }
   }
 
   return (
@@ -849,7 +867,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       </Col>
       
       {/* Card Categories */}
-      {Object.entries(typeLabels).map(([type, label], index) => (
+      {Object.entries(typeInfo).map(([type, info], index) => (
         <Col key={type} className={`${index > 0 ? 'mt-12 pt-8 border-t border-ink-200 dark:border-ink-800/50' : 'mt-6'}`} id={type}>
           <div className="mb-3">
             <Row className="items-center justify-between">
@@ -861,21 +879,16 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
                   type === 'misuse' ? 'text-rose-600' :
                   type === 'human-comparison' ? 'text-purple-600' :
                   'text-primary-600'
-                }`}>{label}</h3>
+                }`}>{info.label}</h3>
                 <p className="text-ink-500 text-sm mt-1">
-                  {type === 'monthly'? 'What\'s the best model this month?': 
-                   type === 'releases' ? 'When will [insert lab here] release the next model?' :
-                   type === 'benchmark' ? 'How smart will the LLMs be?' :
-                   type === 'prize' ? 'Will any model claim this prize?' :
-                   type === 'misuse' ? 'How misaligned are these models?' :
-                   'Do we still have a comparative advantage?'}
+                  {info.description}
                 </p>
               </div>
               <Link 
                 href={`#${type}`} 
                 className="flex items-center justify-center p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-50 rounded-full transition-all duration-200"
                 scroll={false}
-                aria-label={`Link to ${label} section`}
+                aria-label={`Link to ${info.label} section`}
               >
                 <LuLink size={18} />
               </Link>
