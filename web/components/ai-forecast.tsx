@@ -83,7 +83,7 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'AiderBench',
     description: 'Highest ranked model on Aider',
-    marketId: 'LsZPyLPI82', // Top March id: 0t8A5ZA0zQ
+    marketId: '0t8A5ZA0zQ', // Top March
     type: 'monthly',
     displayType: 'top-one-mcq',
   },
@@ -99,9 +99,9 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'Claude 4',
     description: '',
-    marketId: 'dyttOfuYp7ZUefFiymcx', // multiple-choice quarter
+    marketId: 'REZNpc8dQO', // multiple-choice quarter
     type: 'releases',
-    displayType: 'date-numeric',
+    displayType: 'top-one-mcq',
   },
   {
     title: 'Gemini 3',
@@ -465,28 +465,19 @@ function CapabilityCard({
   } else if (displayType === 'top-one-mcq') {
     topModel = getTopOneOdds()
     console.log(`[${title}] topModel set to:`, topModel)
-  } else if (displayType === 'binary-odds') {
+  }
+   else if (displayType === 'binary-odds') {
     // Return dummy probabilities based on the card title
-    if (title.includes('IMO Gold')) {
+    if (title.includes('Millennium Prize')) {
       displayValue = formatPercent(0.37)
-    } else if (title.includes('Millennium Prize')) {
-      displayValue = formatPercent(0.12)
     } else if (title.includes('Arc AGI')) {
       displayValue = formatPercent(0.21)
     } else if (title.includes('Turing Test')) {
       displayValue = formatPercent(0.43)
-    } else if (title.includes('Blackmail')) {
-      displayValue = formatPercent(0.09)
-    } else if (title.includes('Hacking')) {
-      displayValue = formatPercent(0.16)
     } else if (title.includes('Creative Writing')) {
       displayValue = formatPercent(0.65)
     } else if (title.includes('Medical Diagnosis')) {
       displayValue = formatPercent(0.79)
-    } if (title.includes('Claude')) {
-        displayValue = formatPercent(0.75)
-    } else if (title.includes('SWE Bench')) {
-      displayValue = formatPercent(0.30)
     } else {
       displayValue = formatPercent(0.25)
     }
@@ -494,8 +485,6 @@ function CapabilityCard({
     // Use dummy data for date-numeric
     if (title.includes('GPT-5')) {
       displayValue = 'Q3 2025'
-    } else if (title.includes('Claude')) {
-      displayValue = 'Q2 2025'
     } else if (title.includes('Gemini')) {
       displayValue = 'Q1 2025'
     } else if (title.includes('Grok')) {
