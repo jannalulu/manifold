@@ -331,21 +331,8 @@ function CapabilityCard({
   }
   
   // Get top one model for "top-one-mcq" display type
-  const getTopOneOdds = () => {
-    if (displayType === 'top-one-mcq') {
-      if (title.includes('Frontier')) {
-        return { text: 'Claude Sonnet', probability: 0.62 }
-      } else if (title.includes('AiderBench')) {
-        return { text: 'GPT-4o', probability: 0.68 }
-      } else if (title.includes('SWE Bench')) {
-        return { text: 'DeepSeek Coder', probability: 0.58 }
-      } else if (title.includes('Humanity')) {
-        return { text: 'Claude Opus', probability: 0.71 }
-      } else {
-        return { text: 'Anthropic', probability: 0.58 }
-      }
-    }
-    
+  const getTopOneOdds = () => {    
+    // For most top-one-mcq cards, use live market data when available
     if (!liveContract || liveContract.outcomeType !== 'MULTIPLE_CHOICE') {
       console.log("Contract not valid for top-one-mcq:", liveContract?.outcomeType)
       return { text: '—', probability: 0 }
@@ -611,6 +598,61 @@ function CapabilityCard({
       }
     }
     
+    // For monthly type, display similar to top-two-mcq but with only one company
+    if (type === 'monthly') {
+      return (
+        <ClickFrame
+          className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative ${className}`}
+          onClick={handleClick}
+        >
+          <Col className="h-full space-y-2">
+            <div>
+              <div className="flex items-center mb-1">
+                  <div className="mr-2 text-ink-600">
+                    {title.includes('GPT') && <SiOpenai className="h-5 w-5" />}
+                    {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
+                    {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
+                    {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
+                    {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
+                    {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
+                  </div>
+                <h3 className={`font-semibold ${getAccentColor()} text-lg`}>{title}</h3>
+              </div>
+            </div>
+            
+            {/* Company Layout single company */}
+            <div className="rounded-md p-3 flex-1 flex flex-col justify-center">
+              <div className="flex items-center justify-center">
+                {/* Company Display */}
+                <div className="text-center">
+                  {getCompanyLogo(topModel.text) ? (
+                    <div className="flex flex-col items-center">
+                      <div className="h-16 w-16 mb-2 flex items-center justify-center text-primary-600">
+                        {React.createElement(getCompanyLogo(topModel.text) as React.FC<{className?: string}>, { 
+                          className: "w-14 h-14" 
+                        })}
+                      </div>
+                      <div className="text-xl font-bold text-ink-900">
+                        {topModel.text}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-ink-900 truncate">
+                      {topModel.text}
+                    </div>
+                  )}
+                  <div className="text-base text-ink-600 mt-1 font-medium">
+                    {formatPercent(topModel.probability)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Col>
+        </ClickFrame>
+      )
+    }
+    
+    // For non-monthly types, keep the original display
     return (
       <ClickFrame
         className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative ${className}`}
@@ -626,8 +668,8 @@ function CapabilityCard({
                   {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
                   {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
                   {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
-                  {title.includes('Deepseek') && <SiOpenai className="h-5 w-5 opacity-60" />}
-                  {title.includes('Qwen') && <SiOpenai className="h-5 w-5 opacity-60" />}
+                  {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
+                  {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
                 </div>
               )}
               <h3 className={`font-semibold ${getAccentColor()} text-xl`}>{title}</h3>
@@ -706,8 +748,8 @@ function CapabilityCard({
                 {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
                 {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
                 {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
-                {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5 opacity-60" />}
-                {title.includes('Qwen') && <PiBirdBold className="h-5 w-5 opacity-60" />}
+                {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
+                {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
               </div>
             )}
             <h3 className={`font-semibold ${getAccentColor()} text-xl`}>{title}</h3>
