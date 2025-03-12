@@ -333,7 +333,6 @@ function CapabilityCard({
   // Get top one model for "top-one-mcq" display type
   const getTopOneOdds = () => {
     if (displayType === 'top-one-mcq') {
-      // Return dummy data based on the card title
       if (title.includes('Frontier')) {
         return { text: 'Claude Sonnet', probability: 0.62 }
       } else if (title.includes('AiderBench')) {
@@ -426,6 +425,8 @@ function CapabilityCard({
       displayValue = 'Q4 2025'
     } else if (title.includes('Qwen')) {
       displayValue = 'Q4 2025'
+    } else if (title.includes('Deepseek')){
+      displayValue = 'July 2025'
     } else {
       displayValue = '50%'
     }
