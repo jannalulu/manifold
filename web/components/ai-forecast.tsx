@@ -19,6 +19,11 @@ import { LuLink, LuInfo } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
 
+// Shared background pattern for all cards
+const BG_PATTERN_LIGHT = "bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
+const BG_PATTERN_DARK = "dark:bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
+const CARD_BG_PATTERN = `${BG_PATTERN_LIGHT} ${BG_PATTERN_DARK}`
+
 const ENDPOINT = 'ai'
 
 // Tooltip Component for benchmark terms
@@ -261,6 +266,126 @@ export interface AIForecastProps {
   hideTitle?: boolean
 }
 
+// Base card component with shared styling
+function CardBase({ 
+  onClick, 
+  children, 
+  className = "",
+  minHeight = "min-h-[240px]"
+}: { 
+  onClick: () => void, 
+  children: React.ReactNode, 
+  className?: string,
+  minHeight?: string
+}) {
+  return (
+    <ClickFrame
+      className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 
+      transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 ${minHeight}
+      shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] 
+      relative ${CARD_BG_PATTERN} ${className}`}
+      onClick={onClick}
+    >
+      {children}
+    </ClickFrame>
+  );
+}
+
+// Component for card title with optional icon
+function CardTitle({ 
+  title, 
+  type, 
+  showModelIcon = false 
+}: { 
+  title: string, 
+  type: string, 
+  showModelIcon?: boolean 
+}) {
+  return (
+    <div className="flex items-center mb-1">
+      {showModelIcon && (
+        <div className="mr-2 text-ink-600">
+          <AIModelIcon title={title} />
+        </div>
+      )}
+      <h3 className={`font-semibold ${getAccentColor(type)} text-lg`}>{title}</h3>
+    </div>
+  );
+}
+
+// Component for showing AI model icon
+function AIModelIcon({ title, className = "h-5 w-5" }: { title: string, className?: string }) {
+  if (title.includes('GPT')) return <SiOpenai className={className} />;
+  if (title.includes('Claude')) return <SiAnthropic className={className} />;  
+  if (title.includes('Gemini')) return <SiGooglegemini className={className} />;
+  if (title.includes('Grok')) return <RiTwitterXLine className={className} />;
+  if (title.includes('Deepseek')) return <GiSpermWhale className={className} />;
+  if (title.includes('Qwen')) return <PiBirdBold className={className} />;
+  return null;
+}
+
+// Get accent color based on card type
+function getAccentColor(type: string) {
+  switch(type) {
+    case 'monthly': return 'text-primary-600 dark:text-primary-500';
+    case 'releases': return 'text-amber-700 dark:text-amber-500';
+    case 'benchmark': return 'text-teal-700 dark:text-teal-500';
+    case 'prize': return 'text-amber-700 dark:text-amber-500';
+    case 'misuse': return 'text-rose-700 dark:text-rose-500';
+    case 'human-comparison': return 'text-purple-700 dark:text-purple-500';
+    default: return 'text-primary-600 dark:text-primary-500';
+  }
+}
+
+// Get gradient based on card type
+function getGradient(type: string, isText = true) {
+  const textPrefix = isText ? 'text-transparent bg-clip-text ' : '';
+  
+  switch(type) {
+    case 'releases':
+      return `${textPrefix}bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 dark:from-amber-400 dark:via-amber-500 dark:to-amber-600`;
+    case 'benchmark':
+      return `${textPrefix}bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 dark:from-teal-400 dark:via-teal-500 dark:to-teal-600`;
+    case 'prize':
+      return `${textPrefix}bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 dark:from-amber-400 dark:via-amber-500 dark:to-amber-600`;
+    case 'misuse':
+      return `${textPrefix}bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 dark:from-rose-400 dark:via-rose-500 dark:to-rose-600`;
+    case 'human-comparison':
+      return `${textPrefix}bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 dark:from-purple-400 dark:via-purple-500 dark:to-purple-600`;
+    default:
+      return `${textPrefix}bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-400 dark:via-primary-500 dark:to-primary-600`;
+  }
+}
+
+// Create contract click handler
+function createContractClickHandler(contract: Contract | null, liveContract: Contract | null, title: string, marketId: string, displayType?: string) {
+  return () => {
+    console.log(`[${displayType || 'standard'}] ${title} - Click handler called, marketId:`, marketId);
+    console.log(`Contract found:`, !!contract, 'liveContract:', !!liveContract);
+    
+    if (liveContract) {
+      try {
+        // Try to get the path directly from liveContract
+        const path = contractPath(liveContract);
+        console.log(`[${displayType || 'standard'}] ${title} - Opening path from liveContract:`, path);
+        window.open(path, '_blank');
+      } catch (e) {
+        console.error("Error opening contract path:", e);
+        // If we have the original contract, try using that
+        if (contract) {
+          try {
+            const path = contractPath(contract);
+            console.log(`[${displayType || 'standard'}] ${title} - Opening fallback path from contract:`, path);
+            window.open(path, '_blank');
+          } catch (e2) {
+            console.error("Error with fallback path too:", e2);
+          }
+        }
+      }
+    }
+  };
+}
+
 // Capability Card Component for the static cards with market data
 function CapabilityCard({ 
   title,
@@ -318,11 +443,11 @@ function CapabilityCard({
     const result = [
       { 
         text: sortedAnswers[0].text || '—', 
-        probability: sortedAnswers[0].prob ?? sortedAnswers[0].prob ?? 0
+        probability: sortedAnswers[0].prob ?? 0
       },
       { 
         text: sortedAnswers[1].text || '—', 
-        probability: sortedAnswers[1].prob ?? sortedAnswers[1].prob ?? 0 
+        probability: sortedAnswers[1].prob ?? 0 
       }
     ]
     
@@ -433,68 +558,19 @@ function CapabilityCard({
     }
   }
   
-  // Determine the accent color based on type (works in both light/dark modes)
-  const getAccentColor = () => {
-    switch(type) {
-      case 'monthly': return 'text-primary-600 dark:text-primary-500'
-      case 'releases': return 'text-amber-700 dark:text-amber-500'
-      case 'benchmark': return 'text-teal-700 dark:text-teal-500'
-      case 'prize': return 'text-amber-700 dark:text-amber-500'
-      case 'misuse': return 'text-rose-700 dark:text-rose-500'
-      case 'human-comparison': return 'text-purple-700 dark:text-purple-500'
-      default: return 'text-primary-600 dark:text-primary-500'
-    }
-  }
+  // Create click handler for the card
+  const clickHandler = createContractClickHandler(contract, liveContract, title, marketId, displayType)
   
   if (displayType === 'top-two-mcq') {
-    // Create handler function with debug
-    const handleClick = () => {
-      console.log(`[top-two-mcq] ${title} - Click handler called, marketId:`, marketId)
-      console.log(`Contract found:`, !!contract, 'liveContract:', !!liveContract)
-      
-      if (liveContract) {
-        try {
-          // Try to get the path directly from liveContract
-          const path = contractPath(liveContract)
-          console.log(`[top-two-mcq] ${title} - Opening path from liveContract:`, path)
-          window.open(path, '_blank')
-        } catch (e) {
-          console.error("Error opening contract path:", e)
-          // If we have the original contract, try using that
-          if (contract) {
-            try {
-              const path = contractPath(contract)
-              console.log(`[top-two-mcq] ${title} - Opening fallback path from contract:`, path)
-              window.open(path, '_blank')
-            } catch (e2) {
-              console.error("Error with fallback path too:", e2)
-            }
-          }
-        }
-      }
-    }
-    
     return (
-      <ClickFrame
-        className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative ${className}`}
-        onClick={handleClick}
-      >
+      <CardBase onClick={clickHandler} className={className}>
         <Col className="h-full space-y-2">
           <div>
-            <div className="flex items-center mb-1">
-              {/* Show AI provider icon next to title for releases */}
-              {type === 'releases' && (
-                <div className="mr-2 text-ink-600">
-                  {title.includes('GPT') && <SiOpenai className="h-5 w-5" />}
-                  {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
-                  {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
-                  {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
-                  {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
-                  {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
-                </div>
-              )}
-              <h3 className={`font-semibold ${getAccentColor()} text-lg`}>{title}</h3>
-            </div>
+            <CardTitle 
+              title={title} 
+              type={type} 
+              showModelIcon={type === 'releases'} 
+            />
           </div>
           
           {/* VS Match Layout */}
@@ -565,59 +641,23 @@ function CapabilityCard({
             </div>
           </div>
         </Col>
-      </ClickFrame>
+      </CardBase>
     )
   }
   
   // For top-one-mcq display type
   if (displayType === 'top-one-mcq') {
-    // Create handler function with debug
-    const handleClick = () => {
-      console.log(`[top-one-mcq] ${title} - Click handler called, marketId:`, marketId)
-      console.log(`Contract found:`, !!contract, 'liveContract:', !!liveContract)
-      
-      if (liveContract) {
-        try {
-          // Try to get the path directly from liveContract
-          const path = contractPath(liveContract)
-          console.log(`[top-one-mcq] ${title} - Opening path from liveContract:`, path)
-          window.open(path, '_blank')
-        } catch (e) {
-          console.error("Error opening contract path:", e)
-          // If we have the original contract, try using that
-          if (contract) {
-            try {
-              const path = contractPath(contract)
-              console.log(`[top-one-mcq] ${title} - Opening fallback path from contract:`, path)
-              window.open(path, '_blank')
-            } catch (e2) {
-              console.error("Error with fallback path too:", e2)
-            }
-          }
-        }
-      }
-    }
-    
     // For monthly type, display similar to top-two-mcq but with only one company
     if (type === 'monthly') {
       return (
-        <ClickFrame
-          className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative bg-[url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")] dark:bg-[url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")] ${className}`}
-          onClick={handleClick}
-        >
+        <CardBase onClick={clickHandler} className={className}>
           <Col className="h-full space-y-2">
             <div>
-              <div className="flex items-center mb-1">
-                  <div className="mr-2 text-ink-600">
-                    {title.includes('GPT') && <SiOpenai className="h-5 w-5" />}
-                    {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
-                    {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
-                    {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
-                    {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
-                    {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
-                  </div>
-                <h3 className={`font-semibold ${getAccentColor()} text-lg`}>{title}</h3>
-              </div>
+              <CardTitle 
+                title={title} 
+                type={type} 
+                showModelIcon={type === 'releases'} 
+              />
             </div>
             
             {/* Company Layout single company */}
@@ -648,112 +688,49 @@ function CapabilityCard({
               </div>
             </div>
           </Col>
-        </ClickFrame>
+        </CardBase>
       )
     }
     
     // For non-monthly types, keep the original display
     return (
-      <ClickFrame
-        className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative bg-[url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")] dark:bg-[url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")] ${className}`}
-        onClick={handleClick}
-      >
+      <CardBase onClick={clickHandler} className={className}>
         <Col className="h-full space-y-2">
           <div>
-            <div className="flex items-center mb-1">
-              {/* Show AI provider icon next to title for releases */}
-              {type === 'releases' && (
-                <div className="mr-2 text-ink-600">
-                  {title.includes('GPT') && <SiOpenai className="h-5 w-5" />}
-                  {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
-                  {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
-                  {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
-                  {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
-                  {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
-                </div>
-              )}
-              <h3 className={`font-semibold ${getAccentColor()} text-xl`}>{title}</h3>
-            </div>
+            <CardTitle 
+              title={title} 
+              type={type} 
+              showModelIcon={type === 'releases'} 
+            />
           </div>
           
           <div className="rounded-md p-3 flex-1 flex flex-col items-center justify-center">
             <div className="text-3xl font-bold text-center">
-              <span className={`text-transparent bg-clip-text ${
-                type === 'releases' 
-                ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 dark:from-amber-400 dark:via-amber-500 dark:to-amber-600'
-                : type === 'benchmark'
-                  ? 'bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 dark:from-teal-400 dark:via-teal-500 dark:to-teal-600'
-                : 'bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 dark:from-primary-400 dark:via-primary-500 dark:to-primary-600'
-              }`}>
+              <span className={getGradient(type)}>
                 {topModel.text}
               </span>
             </div>
             <div className="text-lg font-medium mt-4">
-              <span className={`text-transparent bg-clip-text ${
-                type === 'releases' 
-                ? 'bg-gradient-to-br from-amber-500 to-amber-700 dark:from-amber-400 dark:to-amber-600'
-                : type === 'benchmark'
-                  ? 'bg-gradient-to-br from-teal-500 to-teal-700 dark:from-teal-400 dark:to-teal-600'
-                : 'bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-400 dark:to-primary-600'
-              }`}>
+              <span className={getGradient(type)}>
                 {formatPercent(topModel.probability)}
               </span>
             </div>
           </div>
         </Col>
-      </ClickFrame>
+      </CardBase>
     )
   }
 
   // Standard card layout for other display types
-  // Create handler function with debug
-  const handleClick = () => {
-    console.log(`[${displayType || 'standard'}] ${title} - Click handler called, marketId:`, marketId)
-    console.log(`Contract found:`, !!contract, 'liveContract:', !!liveContract)
-    
-    if (liveContract) {
-      try {
-        // Try to get the path directly from liveContract
-        const path = contractPath(liveContract)
-        console.log(`[${displayType || 'standard'}] ${title} - Opening path from liveContract:`, path)
-        window.open(path, '_blank')
-      } catch (e) {
-        console.error("Error opening contract path:", e)
-        // If we have the original contract, try using that
-        if (contract) {
-          try {
-            const path = contractPath(contract)
-            console.log(`[${displayType || 'standard'}] ${title} - Opening fallback path from contract:`, path)
-            window.open(path, '_blank')
-          } catch (e2) {
-            console.error("Error with fallback path too:", e2)
-          }
-        }
-      }
-    }
-  }
-  
   return (
-    <ClickFrame
-      className={`group cursor-pointer rounded-lg p-4 border border-ink-200 bg-canvas-0 transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50 min-h-[240px] shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] relative bg-[url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")] dark:bg-[url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")] ${className}`}
-      onClick={handleClick}
-    >
+    <CardBase onClick={clickHandler} className={className}>
       <Col className="h-full">
         <div className="relative w-full mb-1">
-          <div className="flex items-center">
-            {/* Show AI provider icon next to title for releases */}
-            {type === 'releases' && (
-              <div className="mr-2 text-ink-600">
-                {title.includes('GPT') && <SiOpenai className="h-5 w-5" />}
-                {title.includes('Claude') && <SiAnthropic className="h-5 w-5" />}
-                {title.includes('Gemini') && <SiGooglegemini className="h-5 w-5" />}
-                {title.includes('Grok') && <RiTwitterXLine className="h-5 w-5" />}
-                {title.includes('Deepseek') && <GiSpermWhale className="h-5 w-5" />}
-                {title.includes('Qwen') && <PiBirdBold className="h-5 w-5" />}
-              </div>
-            )}
-            <h3 className={`font-semibold ${getAccentColor()} text-xl`}>{title}</h3>
-          </div>
+          <CardTitle 
+            title={title} 
+            type={type} 
+            showModelIcon={type === 'releases'} 
+          />
           {/* Add tooltip for benchmark terms */}
           {(type === 'benchmark' || type === 'prize') && (
             <div className="absolute top-0 right-0">
@@ -770,17 +747,7 @@ function CapabilityCard({
             <div className="flex flex-col justify-between h-full w-full">
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-6xl font-bold text-center">
-                  <span className={`text-transparent bg-clip-text ${
-                    type === 'benchmark'
-                    ? 'bg-gradient-to-br from-teal-500 via-teal-600 to-teal-700 dark:from-teal-400 dark:via-teal-500 dark:to-teal-600'
-                    : type === 'prize'
-                      ? 'bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 dark:from-amber-400 dark:via-amber-500 dark:to-amber-600'
-                      : type === 'misuse'
-                        ? 'bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 dark:from-rose-400 dark:via-rose-500 dark:to-rose-600'
-                        : type === 'human-comparison'
-                          ? 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 dark:from-purple-400 dark:via-purple-500 dark:to-purple-600'
-                          : 'bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-400 dark:via-primary-500 dark:to-primary-600'
-                  }`}>
+                  <span className={getGradient(type)}>
                     {displayValue}
                   </span>
                 </div>
@@ -803,11 +770,7 @@ function CapabilityCard({
           ) : displayType === 'date-numeric' ? (
             <div className="h-full flex-1 flex items-center justify-center">
               <div className="text-4xl font-bold text-center">
-                <span className={`text-transparent bg-clip-text ${
-                  type === 'releases' 
-                  ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 dark:from-amber-400 dark:via-amber-500 dark:to-amber-600' 
-                  : 'bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 dark:from-primary-400 dark:via-primary-500 dark:to-primary-600'
-                }`}>
+                <span className={getGradient(type)}>
                   {displayValue}
                 </span>
               </div>
@@ -815,15 +778,7 @@ function CapabilityCard({
           ) : (
             <div className="h-full flex-1 flex items-center justify-center">
               <div className="text-4xl font-bold text-center">
-                <span className={`text-transparent bg-clip-text ${
-                  type === 'prize' 
-                  ? 'bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600'
-                  : type === 'misuse' 
-                    ? 'bg-gradient-to-b from-rose-400 via-rose-500 to-rose-600'
-                    : type === 'human-comparison'
-                      ? 'bg-gradient-to-b from-purple-400 via-purple-500 to-purple-600'
-                      : 'bg-gradient-to-b from-primary-400 via-primary-500 to-primary-700'
-                }`}>
+                <span className={getGradient(type)}>
                   {displayValue}
                 </span>
               </div>
@@ -831,8 +786,29 @@ function CapabilityCard({
           )}
         </div>
       </Col>
-    </ClickFrame>
+    </CardBase>
   )
+}
+
+// Get company logo component based on company name
+function getCompanyLogo(companyName: string): React.ComponentType | null {
+  // Strip any trailing whitespace or periods that might be in the company name
+  const normalizedName = companyName.trim().replace(/\.$/, '');
+  
+  switch (normalizedName.toLowerCase()) {
+    case 'openai':
+      return SiOpenai;
+    case 'anthropic':
+      return SiAnthropic; // Using Anthropic icon
+    case 'google deepmind':
+    case 'googledeepmind':
+    case 'deepmind':
+      return SiGooglegemini; // Using Google Gemini icon
+    case 'xai':
+      return RiTwitterXLine; // Using a generic AI icon for xAI
+    default:
+      return null; // No specific icon for other companies
+  }
 }
 
 export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastProps) {
@@ -936,9 +912,10 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       
       {/* AGI Clock Card */}
       {liveWhenAgi && (
-        <ClickFrame
-          className="fade-in bg-canvas-0 group relative cursor-pointer rounded-lg p-4 border border-ink-200 shadow-sm bg-[url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E')] dark:bg-[url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E')]"
+        <CardBase
           onClick={() => window.location.href = contractPath(liveWhenAgi)}
+          className="fade-in group relative"
+          minHeight=""
         >
           <Row className="justify-between">
             <Link
@@ -978,11 +955,11 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
               />
             </Col>
           </Row>
-        </ClickFrame>
+        </CardBase>
       )}
       
       {/* Resources Section */}
-      <Col className="mt-8 rounded-lg border border-ink-200 bg-canvas-50 p-6">
+      <Col className={`mt-8 rounded-lg border border-ink-200 bg-canvas-50 p-6 ${CARD_BG_PATTERN}`}>
         <h3 className="mb-4 text-lg font-semibold text-primary-700">AI Resources</h3>
         <p className="mb-4 text-ink-500">
           Expand your knowledge on AI progress with these resources:
@@ -1018,27 +995,6 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
   )
 }
 
-// Get company logo component based on company name
-function getCompanyLogo(companyName: string): React.ComponentType | null {
-  // Strip any trailing whitespace or periods that might be in the company name
-  const normalizedName = companyName.trim().replace(/\.$/, '');
-  
-  switch (normalizedName.toLowerCase()) {
-    case 'openai':
-      return SiOpenai;
-    case 'anthropic':
-      return SiAnthropic; // Using Anthropic icon
-    case 'google deepmind':
-    case 'googledeepmind':
-    case 'deepmind':
-      return SiGooglegemini; // Using Google Gemini icon
-    case 'xai':
-      return RiTwitterXLine; // Using a generic AI icon for xAI
-    default:
-      return null; // No specific icon for other companies
-  }
-}
-
 // Helper component for resource cards
 function ResourceCard({ title, description, link }: { 
   title: string, 
@@ -1047,7 +1003,7 @@ function ResourceCard({ title, description, link }: {
 }) {
   return (
     <Link href={link} target="_blank" rel="noopener noreferrer" className="group">
-      <div className="rounded-md border border-ink-200 bg-canvas-0 p-4 transition hover:bg-canvas-50">
+      <div className={`rounded-md border border-ink-200 bg-canvas-0 p-4 transition hover:bg-canvas-50 ${CARD_BG_PATTERN}`}>
         <h4 className="text-primary-600 font-medium group-hover:underline">{title}</h4>
         <p className="text-sm text-ink-500">{description}</p>
       </div>
