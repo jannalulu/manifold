@@ -814,23 +814,63 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     return <div className="text-ink-500 text-center py-4">No model releases to display</div>
   }
 
-  // Set dynamic timeline dates
+  // Set dynamic timeline dates - only show 6 months at a time
   const currentDate = new Date()
   const startDate = new Date(currentDate)
   startDate.setMonth(currentDate.getMonth() + 1) // Start with next month
   startDate.setDate(1) // Set to first of month
   
-  // Set end date to 1 year from start date
+  // Set end date to 6 months from start date
   const endDate = new Date(startDate)
-  endDate.setFullYear(startDate.getFullYear() + 1)
+  endDate.setMonth(startDate.getMonth() + 5) // 6 months total
   
-  // Generate evenly spaced month markers
-  const generateMonthMarkers = () => {
-    // Create a range of months from start date to one year later
-    const months = []
-    const monthStart = new Date(startDate)
+  // Find the range of all model dates to determine if scroll is needed
+  const earliestModelDate = modelData.length ? 
+    modelData.reduce((earliest, model) => 
+      model.releaseDate < earliest ? model.releaseDate : earliest, 
+      modelData[0].releaseDate
+    ) : startDate;
     
-    const lastDate = new Date(endDate)
+  const latestModelDate = modelData.length ? 
+    modelData.reduce((latest, model) => 
+      model.releaseDate > latest ? model.releaseDate : latest, 
+      modelData[0].releaseDate
+    ) : endDate;
+    
+  // Determine if scroll is needed (if model dates extend beyond our 9-month window)
+  const scrollNeeded = latestModelDate > endDate;
+  
+  // Track scroll position with state
+  const [timelineScrollPosition, setTimelineScrollPosition] = useState(0);
+  
+  // Function to handle scrolling forward in time
+  const scrollForward = () => {
+    const newStartDate = new Date(startDate);
+    newStartDate.setMonth(startDate.getMonth() + 3); // Advance 3 months
+    if (newStartDate <= latestModelDate) {
+      setTimelineScrollPosition(timelineScrollPosition + 3);
+    }
+  };
+  
+  // Function to handle scrolling backward in time
+  const scrollBackward = () => {
+    if (timelineScrollPosition >= 3) {
+      setTimelineScrollPosition(timelineScrollPosition - 3);
+    }
+  };
+  
+  const viewStartDate = new Date(startDate);
+  viewStartDate.setMonth(startDate.getMonth() + timelineScrollPosition);
+  
+  const viewEndDate = new Date(viewStartDate);
+  viewEndDate.setMonth(viewStartDate.getMonth() + 5); // 6 months total
+  
+  // Generate evenly spaced month markers for the visible timeline
+  const generateMonthMarkers = () => {
+    const months = []
+    const monthStart = new Date(viewStartDate)
+    
+    const lastDate = new Date(viewEndDate)
     
     // Go to the start of the month for earliest date
     while (monthStart <= lastDate) {
@@ -843,68 +883,50 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
   
   const monthMarkers = generateMonthMarkers()
   
-  // Calculate position on timeline (0-100%)
+  // Calculate position on timeline (0-100%) based on visible range
   const getTimelinePosition = (date: Date) => {
-    const timeRange = endDate.getTime() - startDate.getTime()
+    const timeRange = viewEndDate.getTime() - viewStartDate.getTime()
     if (timeRange === 0) return 0
     
-    const position = ((date.getTime() - startDate.getTime()) / timeRange) * 100
-    return Math.max(0, Math.min(100, position))
-  }
-  
-  // Vertical positions if too close
-  const processModelPositions = () => {
-    const positions = modelData.map(model => ({
-      ...model,
-      position: getTimelinePosition(model.releaseDate),
-      verticalLevel: 0 // Default
-    }))
+    const position = ((date.getTime() - viewStartDate.getTime()) / timeRange) * 100
     
-    // Sort by horizontal position
-    positions.sort((a, b) => a.position - b.position)
-    
-    // Minimum horizontal gap between icons in pixels (width of icon + some spacing)
-    const minPixelGap = 40
-    
-    // Estimated timeline width
-    const estimatedTimelineWidth = 800 
-    
-    // Convert pixel gap to percentage of timeline width
-    const pixelGapAsPercentage = (minPixelGap / estimatedTimelineWidth) * 100
-    
-    // Assign vertical levels to ensure no overlap
-    for (let i = 1; i < positions.length; i++) {
-      const prev = positions[i - 1]
-      const current = positions[i]
-      
-      // If icons are too close horizontally
-      if (current.position - prev.position < pixelGapAsPercentage) {
-        // Start with level 1 (one step above the timeline)
-        let level = 1
-        
-        // Check all previous icons that could potentially overlap
-        const potentialOverlaps = positions.slice(0, i).filter(p => 
-          Math.abs(p.position - current.position) < pixelGapAsPercentage
-        )
-        
-        // Find a free vertical level
-        while (potentialOverlaps.some(p => p.verticalLevel === level)) {
-          level++
-        }
-        
-        // Assign the vertical level
-        current.verticalLevel = level
-      }
+    // Return position if it's within the visible range (0-100), otherwise return -1
+    if (position >= 0 && position <= 100) {
+      return position
+    } else {
+      return -1 // Indicates the date is outside the visible timeline
     }
-    
-    return positions
   }
-  
-  const adjustedModelPositions = processModelPositions()
 
   return (
     <div className="rounded-lg p-4 mx-2 md:mx-4">
+      {/* Timeline container with scroll buttons if needed */}
       <div className="relative mb-10 mt-12 px-4">
+        {/* Scroll buttons - only show if scrolling is needed */}
+        {scrollNeeded && (
+          <div className="flex justify-between mb-4">
+            <button 
+              onClick={scrollBackward}
+              disabled={timelineScrollPosition === 0}
+              className={`p-2 rounded-full ${timelineScrollPosition === 0 ? 'text-gray-400' : 'text-primary-600 hover:bg-primary-50'}`}
+              aria-label="Scroll backward in time"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <button 
+              onClick={scrollForward}
+              disabled={viewEndDate >= latestModelDate}
+              className={`p-2 rounded-full ${viewEndDate >= latestModelDate ? 'text-gray-400' : 'text-primary-600 hover:bg-primary-50'}`}
+              aria-label="Scroll forward in time"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        )}
         {/* Month markers and labels */}
         <div className="absolute left-0 right-0 top-[15px]">
           {monthMarkers.map((date, index) => {
@@ -946,25 +968,19 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
           })}
         </div>
         
-        {/* Model icons with staggered vertical positioning */}
-        {adjustedModelPositions.map((model) => {
-          // Only show models that fall within timeline range
-          if (model.position < 0 || model.position > 100) return null
-          
-          // Calculate vertical position based on level
-          // Each level is offset by 20px
-          const verticalOffset = model.verticalLevel * -20
+        {modelData.map((model) => {
+           const position = getTimelinePosition(model.releaseDate)
+
+           if (position < 0 || position > 100) return null
           
           return (
             <Link
               key={model.marketId}
               href={model.contract ? contractPath(model.contract) : `#${model.marketId}`}
-              className="absolute"
+              className="absolute top-[-50px]"
               style={{
-                left: `${model.position}%`,
-                top: `-50px`,
-                transform: `translateX(-50%) translateY(${verticalOffset}px)`,
-                zIndex: model.verticalLevel + 1 // Higher icons get higher z-index
+                left: `${position}%`,
+                transform: 'translateX(-50%)'
               }}
             >
               {/* Model icon with tooltip */}
