@@ -346,8 +346,6 @@ function getCompanyColor(corp: string) {
   return colorMap[corp] || colorMap.default
 }
 
-// React Chrono timeline components are used instead of these custom components
-
 // Get gradient based on card type
 function getGradient(type: string, isText = true) {
   const textPrefix = isText ? 'text-transparent bg-clip-text ' : '';
@@ -778,7 +776,7 @@ interface ModelReleasesTimelineProps {
   contracts: Contract[]
 }
 
-// Helper function for model release timeline with hardcoded dates
+// Helper function for model release timeline (dummy data)
 function getEstimatedReleaseDate(title: string, index: number): Date {
   // Hardcoded dates for specific model releases
   if (title.includes('GPT-5')) return new Date(2025, 5, 15)         // June 15, 2025
@@ -789,7 +787,7 @@ function getEstimatedReleaseDate(title: string, index: number): Date {
   if (title.includes('Deepseek V4')) return new Date(2026, 0, 15)    // January 15, 2026
   
   // Default fallback with evenly spaced dates
-  return new Date(2025, 3 + (index % 10), 15)                       // Starting April 2025
+  return new Date(2025, 3 + (index % 10), 15)
 }
 
 // Model data structure used throughout timeline components
@@ -816,11 +814,13 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     return <div className="text-ink-500 text-center py-4">No model releases to display</div>
   }
 
+  // Set dynamic timeline dates
   const currentDate = new Date()
   const startDate = new Date(currentDate)
   startDate.setMonth(currentDate.getMonth() + 1) // Start with next month
   startDate.setDate(1) // Set to first of month
-
+  
+  // Set end date to 1 year from start date
   const endDate = new Date(startDate)
   endDate.setFullYear(startDate.getFullYear() + 1)
   
@@ -851,6 +851,56 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     const position = ((date.getTime() - startDate.getTime()) / timeRange) * 100
     return Math.max(0, Math.min(100, position))
   }
+  
+  // Vertical positions if too close
+  const processModelPositions = () => {
+    const positions = modelData.map(model => ({
+      ...model,
+      position: getTimelinePosition(model.releaseDate),
+      verticalLevel: 0 // Default
+    }))
+    
+    // Sort by horizontal position
+    positions.sort((a, b) => a.position - b.position)
+    
+    // Minimum horizontal gap between icons in pixels (width of icon + some spacing)
+    const minPixelGap = 40
+    
+    // Estimated timeline width
+    const estimatedTimelineWidth = 800 
+    
+    // Convert pixel gap to percentage of timeline width
+    const pixelGapAsPercentage = (minPixelGap / estimatedTimelineWidth) * 100
+    
+    // Assign vertical levels to ensure no overlap
+    for (let i = 1; i < positions.length; i++) {
+      const prev = positions[i - 1]
+      const current = positions[i]
+      
+      // If icons are too close horizontally
+      if (current.position - prev.position < pixelGapAsPercentage) {
+        // Start with level 1 (one step above the timeline)
+        let level = 1
+        
+        // Check all previous icons that could potentially overlap
+        const potentialOverlaps = positions.slice(0, i).filter(p => 
+          Math.abs(p.position - current.position) < pixelGapAsPercentage
+        )
+        
+        // Find a free vertical level
+        while (potentialOverlaps.some(p => p.verticalLevel === level)) {
+          level++
+        }
+        
+        // Assign the vertical level
+        current.verticalLevel = level
+      }
+    }
+    
+    return positions
+  }
+  
+  const adjustedModelPositions = processModelPositions()
 
   return (
     <div className="rounded-lg p-4 mx-2 md:mx-4">
@@ -876,7 +926,7 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
         </div>
         
         {/* Timeline line */}
-        <div className="absolute left-0 right-0 h-1 bg-gray-400 dark:bg-gray-600 top-0"></div>
+        <div className="absolute left-0 right-0 h-1 bg-fuchsia-700 dark:bg-fuchsia-500 top-0"></div>
         
         {/* Tick marks */}
         <div className="absolute left-0 right-0 top-0">
@@ -890,32 +940,43 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
                 style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
               >
                 {/* Tick marks */}
-                <div className="h-3 w-0.5 bg-gray-500 dark:bg-gray-500 -mt-1"></div>
+                <div className="h-3 w-0.5 bg-fuchsia-700 dark:bg-fuchsia-500 -mt-1"></div>
               </div>
             )
           })}
         </div>
         
-        {/* Model icons above timeline */}
-        {modelData.map((model) => {
-          const position = getTimelinePosition(model.releaseDate)
-          
+        {/* Model icons with staggered vertical positioning */}
+        {adjustedModelPositions.map((model) => {
           // Only show models that fall within timeline range
-          if (position < 0 || position > 100) return null
+          if (model.position < 0 || model.position > 100) return null
+          
+          // Calculate vertical position based on level
+          // Each level is offset by 20px
+          const verticalOffset = model.verticalLevel * -20
           
           return (
             <Link
               key={model.marketId}
               href={model.contract ? contractPath(model.contract) : `#${model.marketId}`}
-              className="absolute top-[-50px]"
+              className="absolute"
               style={{
-                left: `${position}%`,
-                transform: 'translateX(-50%)'
+                left: `${model.position}%`,
+                top: `-50px`,
+                transform: `translateX(-50%) translateY(${verticalOffset}px)`,
+                zIndex: model.verticalLevel + 1 // Higher icons get higher z-index
               }}
             >
-              {/* Model icon */}
-              <div className="hover:scale-110 transition-transform">
-                <AIModelIcon title={model.title} className="w-8 h-8 text-gray-600 dark:text-gray-400" />
+              {/* Model icon with tooltip */}
+              <div className="hover:scale-110 transition-transform group relative">
+                <AIModelIcon title={model.title} className="w-10 h-10" />
+                
+                {/* Simple tooltip showing model name on hover */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 
+                                bg-gray-800 text-white text-xs rounded px-2 py-1 mb-1 opacity-0 
+                                group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                  {model.title}
+                </div>
               </div>
             </Link>
           )
