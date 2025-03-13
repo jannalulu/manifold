@@ -752,21 +752,23 @@ function CapabilityCard({
 // Get company logo component based on company name
 function getCompanyLogo(companyName: string): React.ComponentType | null {
   // Strip any trailing whitespace or periods that might be in the company name
-  const normalizedName = companyName.trim().replace(/\.$/, '');
+  const normalizedName = companyName.trim().replace(/\.$/, '')
   
   switch (normalizedName.toLowerCase()) {
     case 'openai':
-      return SiOpenai;
+    case 'gpt-5':
+      return SiOpenai
     case 'anthropic':
-      return SiAnthropic;
-    case 'google deepmind':
-    case 'googledeepmind':
+    case 'claude':
+      return SiAnthropic
+    case 'gemini':
     case 'deepmind':
-      return SiGooglegemini;
+      return SiGooglegemini
     case 'xai':
-      return RiTwitterXLine; // Using X icon for xAI
+    case 'grok':
+      return RiTwitterXLine // Using X icon for xAI
     default:
-      return LiaKiwiBirdSolid; // No specific icon for other companies
+      return LiaKiwiBirdSolid // No specific icon for other companies
   }
 }
 
@@ -776,78 +778,21 @@ interface ModelReleasesTimelineProps {
   contracts: Contract[]
 }
 
-// Helper functions for model release timeline
+// Helper function for model release timeline with hardcoded dates
 function getEstimatedReleaseDate(title: string, index: number): Date {
-  const now = new Date()
-  const nextMonth = new Date(now)
-  nextMonth.setMonth(now.getMonth() + 1)
-  nextMonth.setDate(1)
-  const year = nextMonth.getFullYear()
+  // Hardcoded dates for specific model releases
+  if (title.includes('GPT-5')) return new Date(2025, 5, 15)         // June 15, 2025
+  if (title.includes('Claude 3.7')) return new Date(2025, 7, 1)      // August 1, 2025
+  if (title.includes('Gemini 3')) return new Date(2025, 4, 1)        // May 1, 2025
+  if (title.includes('Grok 4')) return new Date(2025, 10, 10)        // November 10, 2025
+  if (title.includes('Deepseek R2')) return new Date(2025, 6, 5)     // July 5, 2025
+  if (title.includes('Deepseek V4')) return new Date(2026, 0, 15)    // January 15, 2026
   
-  // Assign dates based on model names - adjusted to be within our timeline range
-  // Spread between next month and a year from now
-  if (title.includes('GPT-5')) {
-    const date = new Date(nextMonth)
-    date.setMonth(nextMonth.getMonth() + 2) // 2 months from start
-    return date
-  }
-  if (title.includes('Claude 3.7')) {
-    const date = new Date(nextMonth)
-    date.setMonth(nextMonth.getMonth() + 4) // 4 months from start
-    return date
-  }
-  if (title.includes('Gemini 3')) {
-    const date = new Date(nextMonth)
-    date.setMonth(nextMonth.getMonth() + 1) // 1 month from start
-    return date
-  }
-  if (title.includes('Grok 4')) {
-    const date = new Date(nextMonth)
-    date.setMonth(nextMonth.getMonth() + 6) // 6 months from start
-    return date
-  }
-  if (title.includes('Deepseek R2')) {
-    const date = new Date(nextMonth)
-    date.setMonth(nextMonth.getMonth() + 3) // 3 months from start
-    return date
-  }
-  if (title.includes('Deepseek V4')) {
-    const date = new Date(nextMonth)
-    date.setMonth(nextMonth.getMonth() + 8) // 8 months from start
-    return date
-  }
-  
-  // Default fallback - spread throughout the timeline period
-  const date = new Date(nextMonth)
-  date.setMonth(nextMonth.getMonth() + (index % 11) + 1) // Spread models between months 1-12 from now
-  return date
-}
-
-function getModelCompany(title: string): string {
-  if (title.includes('GPT')) return 'OPENAI'
-  if (title.includes('Claude')) return 'ANTHROPIC'
-  if (title.includes('Gemini')) return 'GOOGLE'
-  if (title.includes('Grok')) return 'GROK'
-  if (title.includes('Deepseek')) return 'DEEPMIND'
-  return 'default'
+  // Default fallback with evenly spaced dates
+  return new Date(2025, 3 + (index % 10), 15)                       // Starting April 2025
 }
 
 // Model data structure used throughout timeline components
-
-// Get company logo component based on company
-type Company = 'OPENAI' | 'ANTHROPIC' | 'GOOGLE' | 'GROK' | 'DEEPMIND';
-
-function getCompanyLogoIcon(company: string) {
-  const icons: Record<Company, JSX.Element> = {
-    'OPENAI': <SiOpenai className="w-5 h-5" />,
-    'ANTHROPIC': <SiAnthropic className="w-5 h-5" />,
-    'GOOGLE': <SiGooglegemini className="w-5 h-5" />,
-    'GROK': <RiTwitterXLine className="w-5 h-5" />,
-    'DEEPMIND': <GiSpermWhale className="w-5 h-5" />
-  };
-  
-  return icons[company as Company] || <FaQuestionCircle className="w-5 h-5" />;
-}
 
 // Timeline
 function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps) {
@@ -862,8 +807,7 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
         title: card.title,
         marketId: card.marketId,
         contract,
-        releaseDate,
-        company: getModelCompany(card.title),
+        releaseDate
       }
     }).sort((a, b) => a.releaseDate.getTime() - b.releaseDate.getTime())
   }, [cards, contracts])
@@ -872,13 +816,11 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     return <div className="text-ink-500 text-center py-4">No model releases to display</div>
   }
 
-  // Get next month as start of timeline
   const currentDate = new Date()
   const startDate = new Date(currentDate)
   startDate.setMonth(currentDate.getMonth() + 1) // Start with next month
   startDate.setDate(1) // Set to first of month
-  
-  // Set end date to 1 year from start date
+
   const endDate = new Date(startDate)
   endDate.setFullYear(startDate.getFullYear() + 1)
   
@@ -965,15 +907,15 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
             <Link
               key={model.marketId}
               href={model.contract ? contractPath(model.contract) : `#${model.marketId}`}
-              className="absolute top-[-35px]"
+              className="absolute top-[-50px]"
               style={{
                 left: `${position}%`,
                 transform: 'translateX(-50%)'
               }}
             >
-              {/* Company icon */}
-              <div className="hover:scale-150 transition-transform">
-                {getCompanyLogoIcon(model.company)}
+              {/* Model icon */}
+              <div className="hover:scale-110 transition-transform">
+                <AIModelIcon title={model.title} className="w-8 h-8 text-gray-600 dark:text-gray-400" />
               </div>
             </Link>
           )
