@@ -17,6 +17,7 @@ import { RiTwitterXLine } from 'react-icons/ri'
 import { LuLink, LuInfo } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
+import { LiaKiwiBirdSolid } from "react-icons/lia"
 
 // Shared background pattern for all cards
 const BG_PATTERN_LIGHT = "bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
@@ -59,7 +60,7 @@ const benchmarkDescriptions: Record<string, string> = {
   'Humanity\'s Last Exam Top Score': 'A collection of extremely difficult problems across various domains, designed to test the limits of AI capabilities compared to human experts.',
   'Millennium Prize': 'The Millennium Prize Problems are seven of the most difficult unsolved problems in mathematics, each with a $1 million prize for solution.',
   'Arc AGI Claimed': 'Anthropic\'s Rubric for AI Capability Evaluation - a comprehensive benchmark designed to evaluate artificial general intelligence capabilities.',
-  'Turing Test (Long Bets) Passed': 'The classic test of a machine\'s ability to exhibit intelligent behavior indistinguishable from that of a human, proposed by Alan Turing.'
+  'Turing Test (Long Bets) Passed': 'Each of the three human judges will conduct two hour long text-based interviews with each of the four candidates. The computer would have passed the Turing test if it fooled two of the three judges.'
 }
 
 // Define type for capability cards
@@ -91,43 +92,43 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   // Releases
   {
     title: 'GPT-5',
-    description: 'GPT-4 model released by EOY',
-    marketId: 'fSGBkooZ6BY6UQoCrGUo', // GPT-5 numeric market
+    description: 'GPT-5 model released by EOY',
+    marketId: 'XAsltiEcvy7KwJveXQ42',
     type: 'releases',
-    displayType: 'date-numeric'
+    displayType: 'top-one-mcq'
   },
   {
-    title: 'Claude 4',
+    title: 'Claude 3.7 Opus',
     description: '',
-    marketId: 'REZNpc8dQO', // multiple-choice quarter
+    marketId: 'REZNpc8dQO',
     type: 'releases',
     displayType: 'top-one-mcq',
   },
   {
     title: 'Gemini 3',
     description: '',
-    marketId: 'placeholder-3', // Replace with actual ID
+    marketId: 'placeholder-3',
     type: 'releases',
     displayType: 'date-numeric'
   },
   {
     title: 'Grok 4',
     description: '',
-    marketId: 'placeholder-4', // Replace with actual ID
+    marketId: 'QUyRsPRhgd',
     type: 'releases',
-    displayType: 'date-numeric'
+    displayType: 'top-one-mcq'
   },
   {
     title: 'Deepseek R2',
     description: '',
-    marketId: 'placeholder-4', // Replace with actual ID
+    marketId: 'hZ8ytzn9gh',
     type: 'releases',
-    displayType: 'date-numeric'
+    displayType: 'top-one-mcq'
   },
   {
     title: 'Qwen 3',
     description: '',
-    marketId: 'placeholder-4', // Replace with actual ID
+    marketId: 'placeholder-4',
     type: 'releases',
     displayType: 'date-numeric'
   },
@@ -141,69 +142,69 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     displayType: 'binary-odds'
   },
   {
-    title: 'Frontier Math Passed',
+    title: 'CodeForces Top Score',
     description: '>80% on Frontier Math by EOY',
-    marketId: 'LNdOg08SsU', // Replace with actual ID
+    marketId: 'RSAcZtOZyl',
     type: 'benchmark',
-    displayType: 'binary-odds'
+    displayType: 'top-one-mcq'
   },
     {
     title: 'Frontier Math Top Score',
     description: 'top performance on frontier math',
-    marketId: 'Uu5q0usuQg', // Replace with actual ID
+    marketId: 'Uu5q0usuQg',
     type: 'benchmark',
     displayType: 'top-one-mcq'
   },
   {
     title: 'SWE Bench Top Score',
     description: 'Top SWE Bench score by EOY',
-    marketId: 'placeholder-2', // Replace with actual ID
+    marketId: 'placeholder-2',
     type: 'benchmark',
     displayType: 'binary-odds'
   },
   {
     title: 'Highest Humanity\'s Last Exam Top Score',
     description:'Highest score on Humanity\'s last exam by EOY',
-    marketId: 'placeholder-3', // Replace with actual ID
+    marketId: 'tzsZCn85RQ',
     type: 'benchmark',
-    displayType: 'top-one-mcq'
+    displayType: 'binary-odds'
   },
   
   // Prizes
   {
     title: 'Millennium Prize',
     description: 'AI Solve Millennium Problem by EOY',
-    marketId: 'placeholder-2', // Replace with actual ID
+    marketId: 'KmvP3Ggw5z7vFATu5urA',
     type: 'prize',
     displayType: 'binary-odds'
   },
   {
     title: 'Arc AGI Claimed',
     description: 'Arc AGI prize by EOY',
-    marketId: 'placeholder-3', // Replace with actual ID
+    marketId: 'W1KGdImLB5cb1p75M88e',
     type: 'prize',
     displayType: 'binary-odds'
   },
   {
     title: 'Turing Test (Long Bets) Passed',
     description: 'Will AI pass long bets Turing Test by EOY?',
-    marketId: 'placeholder-3', // Replace with actual ID
+    marketId: 'nKyHon3IPOqJYzaWTHJB',
     type: 'prize',
     displayType: 'binary-odds'
   },
   
   // AI misuse
   {
-    title: 'AI Blackmail',
+    title: 'AI Blackmail by 2028',
     description: 'AI Blackmails someone for >$1000',
-    marketId: 's82955uAnR',
+    marketId: 'W1KGdImLB5cb1p75M88e',
     type: 'misuse',
     displayType: 'binary-odds'
   },
   {
     title: 'Hacking',
     description: 'AI independently hacks a system',
-    marketId: 'placeholder-5', // Replace with actual ID
+    marketId: 's82955uAnR',
     type: 'misuse',
     displayType: 'binary-odds'
   },
@@ -212,14 +213,14 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'Creative Writing',
     description: 'AI-written novel wins major literary prize by 2027',
-    marketId: 'placeholder-6', // Replace with actual ID
+    marketId: 'placeholder-6',
     type: 'human-comparison',
     displayType: 'binary-odds'
   },
   {
     title: 'Medical Diagnosis',
     description: 'AI outperforms average doctor in general diagnosis by 2026',
-    marketId: 'placeholder-7', // Replace with actual ID
+    marketId: 'placeholder-7',
     type: 'human-comparison',
     displayType: 'binary-odds'
   }
@@ -422,9 +423,10 @@ function CapabilityCard({
   
   // Get top one model for "top-one-mcq" display type
   const getTopOneOdds = () => {
-    if (!liveContract || liveContract.outcomeType !== 'MULTIPLE_CHOICE') {
-      console.log("Contract not valid for top-one-mcq:", liveContract?.outcomeType)
-      return { text: '—', probability: 0 }
+    if (!liveContract || 
+        (liveContract.outcomeType !== 'MULTIPLE_CHOICE')) {
+        console.log("Contract not valid for top-one-mcq:", liveContract?.outcomeType)
+        return { text: '—', probability: 0 }
     }
     
     const answers = liveContract.answers || []
@@ -454,53 +456,29 @@ function CapabilityCard({
   }
   
   // Determine the value to display
-  let displayValue = '—'
+  let displayValue = formatPercent(0.25) // '-'
   let topCompanies = [{ text: '—', probability: 0 }, { text: '—', probability: 0 }]
   let topModel = { text: '—', probability: 0 }
   
   if (displayType === 'top-two-mcq' && liveContract && liveContract.outcomeType === 'MULTIPLE_CHOICE') {
-    topCompanies = getTopTwoOdds()
-  } else if (displayType === 'top-one-mcq') {
-    topModel = getTopOneOdds()
-    console.log(`[${title}] topModel set to:`, topModel)
-  }
-   else if (displayType === 'binary-odds') {
-    if (liveContract && liveContract.outcomeType === 'BINARY') {
-      const prob = liveContract.prob !== undefined 
-        ? liveContract.prob 
-        : getDisplayProbability(liveContract as BinaryContract)
-      displayValue = formatPercent(prob)
-    } 
-    // Fallback to dummy probabilities if no contract or not binary
-    else {
-      // Return dummy probabilities based on the card title
-      if (title.includes('Millennium Prize')) {
-        displayValue = formatPercent(0.37)
-      } else {
-        displayValue = formatPercent(0.25)
-      }
-    }
-  } else if (displayType === 'date-numeric') {
-    // Use dummy data for date-numeric
-    if (title.includes('Deepseek R2')) {
-      displayValue = 'Q3 2025'
-    } else {
-      displayValue = '2025-12-24'
-    }
-  } else {
-    // Set dummy values for other cards based on card title
-    if (title.includes('Frontier Math Passed')) {
-      displayValue = formatPercent(0.72)
-    } else if (title.includes('Highest Humanity')) {
-      displayValue = '85%'
-    } else {
-      // Default display behavior
-      displayValue = probability !== null 
-        ? formatPercent(probability) 
-        : numericValue !== null 
-          ? numericValue.toFixed(1) 
-          : '—'
-    }
+  topCompanies = getTopTwoOdds()
+} else if (displayType === 'top-one-mcq') {
+  topModel = getTopOneOdds()
+  console.log(`[${title}] topModel set to:`, topModel)
+} else if (displayType === 'binary-odds') {
+  if (liveContract && liveContract.outcomeType === 'BINARY') {
+    const prob = liveContract.prob !== undefined 
+      ? liveContract.prob 
+      : getDisplayProbability(liveContract as BinaryContract)
+    displayValue = formatPercent(prob)
+  } 
+} else {
+  const probability = 0.25
+  displayValue = probability !== null 
+    ? formatPercent(probability) 
+    : numericValue !== null 
+      ? numericValue.toFixed(1)
+      : '—'
   }
   
   // Create click handler for the card
@@ -659,7 +637,7 @@ function CapabilityCard({
             </div>
             
             {/* Bottom-aligned probability display */}
-            <div className="text-ink-600 text-sm mt-auto text-left w-full px-2 pb-1">
+            <div className="text-ink-600 text-sm mt-3 text-left w-full px-1">
               Probability: <span className="font-medium">{formatPercent(topModel.probability)}</span>
             </div>
           </div>
@@ -746,15 +724,15 @@ function getCompanyLogo(companyName: string): React.ComponentType | null {
     case 'openai':
       return SiOpenai;
     case 'anthropic':
-      return SiAnthropic; // Using Anthropic icon
+      return SiAnthropic;
     case 'google deepmind':
     case 'googledeepmind':
     case 'deepmind':
-      return SiGooglegemini; // Using Google Gemini icon
+      return SiGooglegemini;
     case 'xai':
-      return RiTwitterXLine; // Using a generic AI icon for xAI
+      return RiTwitterXLine; // Using X icon for xAI
     default:
-      return null; // No specific icon for other companies
+      return LiaKiwiBirdSolid; // No specific icon for other companies
   }
 }
 
@@ -765,7 +743,6 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
   const eventMonth = Math.round((expectedValueAGI - eventYear) * 12)
   const expectedYear = new Date(eventYear, eventMonth, 1)
   
-  // Group capability cards by type
   const capabilityCardsByType = AI_CAPABILITY_CARDS.reduce((grouped, card) => {
     if (!grouped[card.type]) {
       grouped[card.type] = []
@@ -774,15 +751,14 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     return grouped
   }, {} as Record<string, typeof AI_CAPABILITY_CARDS>)
   
-  // Type information for UI
   const typeInfo = {
+    'releases': {
+      label: 'Model Releases',
+      description: 'When will [insert lab here] release the next model?'
+    },
     'monthly': {
       label: 'Best Model in March',
       description: 'What\'s the best model this month?'
-    },
-    'releases': {
-      label: 'Model Release Dates',
-      description: 'When will [insert lab here] release the next model?'
     },
     'benchmark': {
       label: 'Benchmarks',
@@ -912,56 +888,6 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
           </Row>
         </CardBase>
       )}
-      
-      {/* Resources Section */}
-      <Col className={`mt-8 rounded-lg border border-ink-200 bg-canvas-50 p-6 ${CARD_BG_PATTERN}`}>
-        <h3 className="mb-4 text-lg font-semibold text-primary-700">AI Resources</h3>
-        <p className="mb-4 text-ink-500">
-          Expand your knowledge on AI progress with these resources:
-        </p>
-        
-        <div className="grid gap-4 md:grid-cols-2">
-          <ResourceCard 
-            title="AI Timeline"
-            description="Major milestones in AI history"
-            link="https://aimultiple.com/ai-timeline"
-          />
-          
-          <ResourceCard 
-            title="LessWrong AI Capabilities"
-            description="Community discussions on AI progress"
-            link="https://www.lesswrong.com/tag/ai-capabilities"
-          />
-          
-          <ResourceCard 
-            title="Alignment Forum"
-            description="Research on AI safety and alignment"
-            link="https://www.alignmentforum.org/"
-          />
-          
-          <ResourceCard 
-            title="Future of Life Institute"
-            description="AI policy and governance research"
-            link="https://futureoflife.org/ai/"
-          />
-        </div>
-      </Col>
     </Col>
-  )
-}
-
-// Helper component for resource cards
-function ResourceCard({ title, description, link }: { 
-  title: string, 
-  description: string, 
-  link: string,
-}) {
-  return (
-    <Link href={link} target="_blank" rel="noopener noreferrer" className="group">
-      <div className={`rounded-md border border-ink-200 bg-canvas-0 p-4 transition hover:bg-canvas-50 ${CARD_BG_PATTERN}`}>
-        <h4 className="text-primary-600 font-medium group-hover:underline">{title}</h4>
-        <p className="text-sm text-ink-500">{description}</p>
-      </div>
-    </Link>
   )
 }
