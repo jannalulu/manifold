@@ -421,8 +421,7 @@ function CapabilityCard({
   }
   
   // Get top one model for "top-one-mcq" display type
-  const getTopOneOdds = () => {    
-    // For most top-one-mcq cards, use live market data when available
+  const getTopOneOdds = () => {
     if (!liveContract || liveContract.outcomeType !== 'MULTIPLE_CHOICE') {
       console.log("Contract not valid for top-one-mcq:", liveContract?.outcomeType)
       return { text: '—', probability: 0 }
@@ -445,7 +444,6 @@ function CapabilityCard({
     
     console.log("Sorted top answer for top-one-mcq:", sortedAnswers[0])
     
-    // First try probability field, then fallback to prob
     const result = { 
       text: sortedAnswers[0].text || '—', 
       probability: sortedAnswers[0].prob ?? 0 
@@ -467,34 +465,27 @@ function CapabilityCard({
     console.log(`[${title}] topModel set to:`, topModel)
   }
    else if (displayType === 'binary-odds') {
-    // Return dummy probabilities based on the card title
-    if (title.includes('Millennium Prize')) {
-      displayValue = formatPercent(0.37)
-    } else if (title.includes('Arc AGI')) {
-      displayValue = formatPercent(0.21)
-    } else if (title.includes('Turing Test')) {
-      displayValue = formatPercent(0.43)
-    } else if (title.includes('Creative Writing')) {
-      displayValue = formatPercent(0.65)
-    } else if (title.includes('Medical Diagnosis')) {
-      displayValue = formatPercent(0.79)
-    } else {
-      displayValue = formatPercent(0.25)
+    if (liveContract && liveContract.outcomeType === 'BINARY') {
+      const prob = liveContract.prob !== undefined 
+        ? liveContract.prob 
+        : getDisplayProbability(liveContract as BinaryContract)
+      displayValue = formatPercent(prob)
+    } 
+    // Fallback to dummy probabilities if no contract or not binary
+    else {
+      // Return dummy probabilities based on the card title
+      if (title.includes('Millennium Prize')) {
+        displayValue = formatPercent(0.37)
+      } else {
+        displayValue = formatPercent(0.25)
+      }
     }
   } else if (displayType === 'date-numeric') {
     // Use dummy data for date-numeric
-    if (title.includes('GPT-5')) {
+    if (title.includes('Deepseek R2')) {
       displayValue = 'Q3 2025'
-    } else if (title.includes('Gemini')) {
-      displayValue = 'Q1 2025'
-    } else if (title.includes('Grok')) {
-      displayValue = 'Q4 2025'
-    } else if (title.includes('Qwen')) {
-      displayValue = 'Q4 2025'
-    } else if (title.includes('Deepseek')){
-      displayValue = 'July 2025'
     } else {
-      displayValue = '50%'
+      displayValue = '2025-12-24'
     }
   } else {
     // Set dummy values for other cards based on card title
