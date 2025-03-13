@@ -779,18 +779,48 @@ interface ModelReleasesTimelineProps {
 // Helper functions for model release timeline
 function getEstimatedReleaseDate(title: string, index: number): Date {
   const now = new Date()
-  const year = now.getFullYear()
+  const nextMonth = new Date(now)
+  nextMonth.setMonth(now.getMonth() + 1)
+  nextMonth.setDate(1)
+  const year = nextMonth.getFullYear()
   
-  // Assign dates based on model names
-  if (title.includes('GPT-5')) return new Date(2025, 5, 15)
-  if (title.includes('Claude 3.7')) return new Date(2025, 8, 1)
-  if (title.includes('Gemini 3')) return new Date(2025, 4, 10)
-  if (title.includes('Grok 4')) return new Date(2025, 11, 20)
-  if (title.includes('Deepseek R2')) return new Date(2025, 7, 5)
-  if (title.includes('Deepseek V4')) return new Date(2026, 2, 15)
+  // Assign dates based on model names - adjusted to be within our timeline range
+  // Spread between next month and a year from now
+  if (title.includes('GPT-5')) {
+    const date = new Date(nextMonth)
+    date.setMonth(nextMonth.getMonth() + 2) // 2 months from start
+    return date
+  }
+  if (title.includes('Claude 3.7')) {
+    const date = new Date(nextMonth)
+    date.setMonth(nextMonth.getMonth() + 4) // 4 months from start
+    return date
+  }
+  if (title.includes('Gemini 3')) {
+    const date = new Date(nextMonth)
+    date.setMonth(nextMonth.getMonth() + 1) // 1 month from start
+    return date
+  }
+  if (title.includes('Grok 4')) {
+    const date = new Date(nextMonth)
+    date.setMonth(nextMonth.getMonth() + 6) // 6 months from start
+    return date
+  }
+  if (title.includes('Deepseek R2')) {
+    const date = new Date(nextMonth)
+    date.setMonth(nextMonth.getMonth() + 3) // 3 months from start
+    return date
+  }
+  if (title.includes('Deepseek V4')) {
+    const date = new Date(nextMonth)
+    date.setMonth(nextMonth.getMonth() + 8) // 8 months from start
+    return date
+  }
   
-  // Default fallback - spread throughout the year
-  return new Date(year, index % 12, 15)
+  // Default fallback - spread throughout the timeline period
+  const date = new Date(nextMonth)
+  date.setMonth(nextMonth.getMonth() + (index % 11) + 1) // Spread models between months 1-12 from now
+  return date
 }
 
 function getModelCompany(title: string): string {
@@ -842,69 +872,112 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     return <div className="text-ink-500 text-center py-4">No model releases to display</div>
   }
 
-  // Get earliest and latest dates for timeline
-  const earliestDate = modelData[0]?.releaseDate
-  const latestDate = modelData[modelData.length - 1]?.releaseDate
+  // Get next month as start of timeline
+  const currentDate = new Date()
+  const startDate = new Date(currentDate)
+  startDate.setMonth(currentDate.getMonth() + 1) // Start with next month
+  startDate.setDate(1) // Set to first of month
+  
+  // Set end date to 1 year from start date
+  const endDate = new Date(startDate)
+  endDate.setFullYear(startDate.getFullYear() + 1)
+  
+  // Generate evenly spaced month markers
+  const generateMonthMarkers = () => {
+    // Create a range of months from start date to one year later
+    const months = []
+    const monthStart = new Date(startDate)
+    
+    const lastDate = new Date(endDate)
+    
+    // Go to the start of the month for earliest date
+    while (monthStart <= lastDate) {
+      months.push(new Date(monthStart))
+      monthStart.setMonth(monthStart.getMonth() + 1)
+    }
+    
+    return months
+  }
+  
+  const monthMarkers = generateMonthMarkers()
   
   // Calculate position on timeline (0-100%)
   const getTimelinePosition = (date: Date) => {
-    if (!earliestDate || !latestDate) return 0
-    const timeRange = latestDate.getTime() - earliestDate.getTime()
-    if (timeRange === 0) return 50 // If all dates are the same
+    const timeRange = endDate.getTime() - startDate.getTime()
+    if (timeRange === 0) return 0
     
-    const position = ((date.getTime() - earliestDate.getTime()) / timeRange) * 100
-    return Math.max(5, Math.min(95, position)) // Keep within 5-95% range for visual appeal
+    const position = ((date.getTime() - startDate.getTime()) / timeRange) * 100
+    return Math.max(0, Math.min(100, position))
   }
 
   return (
-    <div className="rounded-lg p-4 border border-ink-200 dark:border-ink-400 mt-2">
-      <div className="flex justify-between items-center mb-6">
-        <div className="text-xs text-ink-400 dark:text-ink-500">
-          {formatDateFn(earliestDate, 'MMM yyyy')} — {formatDateFn(latestDate, 'MMM yyyy')}
-        </div>
-      </div>
-      
-      {/* Simple grid view that shows all models with their dates */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-6">
-        {modelData.map((model) => (
-          <div key={model.marketId} className="flex justify-center">
-            <ModelCard model={model} withDate />
-          </div>
-        ))}
-      </div>
-      
-      {/* Horizontal timeline underneath */}
-      <div className="relative mt-10 h-20 px-6">
-        {/* Timeline line */}
-        <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-fuchsia-200 dark:bg-fuchsia-900"></div>
-        
-        {/* Timeline dates (beginning and end) */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
-          {formatDateFn(earliestDate, 'MMM')}
-        </div>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
-          {formatDateFn(latestDate, 'MMM')}
-        </div>
-        
-        {/* Model dots on timeline */}
-        {modelData.map((model) => (
-          <div 
-            key={model.marketId}
-            className="absolute top-1/2 -translate-y-1/2 group"
-            style={{
-              left: `calc(${getTimelinePosition(model.releaseDate)}% + 1.5rem - ${getTimelinePosition(model.releaseDate) * 0.03}rem)`,
-            }}
-          >
-            {/* Dot with tooltip */}
-            <div className="w-4 h-4 rounded-full bg-fuchsia-600 dark:bg-fuchsia-500 cursor-pointer hover:scale-125 transition-transform"></div>
+    <div className="rounded-lg p-4 mx-2 md:mx-4">
+      <div className="relative mb-10 mt-12 px-4">
+        {/* Month markers and labels */}
+        <div className="absolute left-0 right-0 top-[15px]">
+          {monthMarkers.map((date, index) => {
+            const position = (index / (monthMarkers.length - 1)) * 100
             
-            {/* Tooltip on hover showing model name */}
-            <div className="opacity-0 group-hover:opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-white dark:bg-gray-800 text-xs font-medium shadow-md rounded pointer-events-none whitespace-nowrap z-10 transition-opacity">
-              {model.title}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white dark:bg-gray-800 transform rotate-45"></div>
-            </div>
-          </div>
-        ))}
+            return (
+              <div 
+                key={formatDateFn(date, 'yyyy-MM')} 
+                className="absolute"
+                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+              >
+                {/* Month label positioned above the timeline */}
+                <div className="text-xs text-gray-600 dark:text-gray-400 text-center whitespace-nowrap mb-2">
+                  {formatDateFn(date, 'MMM yyyy')}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        
+        {/* Timeline line */}
+        <div className="absolute left-0 right-0 h-1 bg-gray-400 dark:bg-gray-600 top-0"></div>
+        
+        {/* Tick marks */}
+        <div className="absolute left-0 right-0 top-0">
+          {monthMarkers.map((date, index) => {
+            const position = (index / (monthMarkers.length - 1)) * 100
+            
+            return (
+              <div 
+                key={`tick-${formatDateFn(date, 'yyyy-MM')}`} 
+                className="absolute"
+                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+              >
+                {/* Tick marks */}
+                <div className="h-3 w-0.5 bg-gray-500 dark:bg-gray-500 -mt-1"></div>
+              </div>
+            )
+          })}
+        </div>
+        
+        {/* Model icons above timeline */}
+        {modelData.map((model) => {
+          const position = getTimelinePosition(model.releaseDate)
+          
+          // Only show models that fall within timeline range
+          if (position < 0 || position > 100) return null
+          
+          return (
+            <Link
+              key={model.marketId}
+              href={model.contract ? contractPath(model.contract) : `#${model.marketId}`}
+              className="absolute top-[-35px]"
+              style={{
+                left: `${position}%`,
+                transform: 'translateX(-50%)'
+              }}
+            >
+              {/* Company icon */}
+              <div className="hover:scale-150 transition-transform">
+                {getCompanyLogoIcon(model.company)}
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
