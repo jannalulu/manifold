@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react'
-import clsx from 'clsx'
 import { BinaryContract, CPMMNumericContract, Contract, contractPath } from 'common/contract'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
@@ -20,8 +19,7 @@ import { LuLink, LuInfo } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
 import { LiaKiwiBirdSolid } from "react-icons/lia"
-import { IoLogoGoogle } from "react-icons/io5"
-import { FaQuestionCircle, FaUser } from "react-icons/fa"
+import { FaQuestionCircle } from "react-icons/fa"
 
 // Shared background pattern for all cards
 const BG_PATTERN_LIGHT = "bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
@@ -348,53 +346,7 @@ function getCompanyColor(corp: string) {
   return colorMap[corp] || colorMap.default
 }
 
-// Horizontal timeline component for model releases
-interface TimelineProps {
-  children: React.ReactNode
-  className?: string
-}
-
-function Timeline(props: TimelineProps) {
-  const { children, className } = props
-  return (
-    <div className={clsx('relative my-4', className)}>
-      {/* Timeline line - horizontal */}
-      <div className="absolute left-0 w-full h-0.5 bg-gray-300 dark:bg-gray-700 top-[70px]"></div>
-      {/* Timeline items - horizontal row with overflow scrolling */}
-      <div className="relative z-10 flex overflow-x-auto py-6 gap-8 px-2 pb-4 snap-x scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-interface TimelineItemProps {
-  date: Date
-  children: React.ReactNode
-  className?: string
-}
-
-function TimelineItem(props: TimelineItemProps) {
-  const { date, children, className } = props
-  
-  return (
-    <div className="flex flex-col items-center snap-start min-w-[140px] w-[140px] first:ml-4 last:mr-4">
-      {/* Model content */}
-      <div className="mb-6">{children}</div>
-      
-      {/* Dot on timeline */}
-      <div className={clsx(
-        'z-20 h-4 w-4 rounded-full mb-3',
-        className || 'bg-fuchsia-600 dark:bg-fuchsia-500'
-      )}></div>
-      
-      {/* Date display */}
-      <div className="text-sm font-medium text-gray-600 dark:text-gray-400 text-center">
-        {formatDateFn(date, 'MMM yyyy')}
-      </div>
-    </div>
-  )
-}
+// React Chrono timeline components are used instead of these custom components
 
 // Get gradient based on card type
 function getGradient(type: string, isText = true) {
@@ -850,17 +802,7 @@ function getModelCompany(title: string): string {
   return 'default'
 }
 
-// Timeline item component for model releases
-interface ModelTimelineItemProps {
-  model: {
-    title: string
-    marketId: string
-    company: string
-    releaseDate: Date
-    contract?: Contract | null
-  }
-  position?: 'left' | 'right' // Position no longer used for horizontal timeline
-}
+// Model data structure used throughout timeline components
 
 // Get company logo component based on company
 function getCompanyLogoIcon(company: string) {
@@ -880,30 +822,39 @@ function getCompanyLogoIcon(company: string) {
   }
 }
 
-function ModelTimelineItem({ model }: ModelTimelineItemProps) {
+// Custom card item for react-chrono timeline
+function ModelCard({ model, withDate = false }: { 
+  model: {
+    title: string
+    marketId: string
+    company: string
+    releaseDate: Date
+    contract?: Contract | null
+  }
+  withDate?: boolean 
+}) {
   const contract = model.contract
   const liveContract = contract ? useLiveContract(contract) : null
   
   return (
-    <TimelineItem
-      key={model.marketId}
-      date={model.releaseDate}
-      className={getCompanyColor(model.company)}
+    <Link
+      href={liveContract ? contractPath(liveContract) : `#${model.marketId}`}
+      className="block w-[120px]"
     >
-      <Link
-        href={liveContract ? contractPath(liveContract) : `#${model.marketId}`}
-        className="block w-full"
-      >
-        <div className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50/10">
-          <div className="h-10 w-10 rounded-full bg-canvas-50 dark:bg-canvas-700 mb-1 flex items-center justify-center transition-transform hover:scale-110">
-            {getCompanyLogoIcon(model.company)}
-          </div>
-          <div className="text-center font-medium text-primary-700 hover:text-primary-800 dark:text-primary-500 dark:hover:text-primary-400 mt-1 text-sm leading-tight">
-            {model.title}
-          </div>
+      <div className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all hover:bg-canvas-100 dark:hover:bg-canvas-800 border border-transparent hover:border-fuchsia-300 dark:hover:border-fuchsia-800">
+        <div className="h-10 w-10 rounded-full bg-canvas-100 dark:bg-canvas-800 mb-1 flex items-center justify-center transition-transform hover:scale-110">
+          {getCompanyLogoIcon(model.company)}
         </div>
-      </Link>
-    </TimelineItem>
+        <div className="text-center font-medium text-ink-700 hover:text-fuchsia-700 dark:text-ink-300 dark:hover:text-fuchsia-500 text-xs leading-tight">
+          {model.title}
+        </div>
+        {withDate && (
+          <div className="text-center text-gray-500 dark:text-gray-400 text-xs mt-1">
+            {formatDateFn(model.releaseDate, 'MMM yyyy')}
+          </div>
+        )}
+      </div>
+    </Link>
   )
 }
 
@@ -913,12 +864,13 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     return cards.map((card, index) => {
       // Find the contract
       const contract = contracts.find(c => c.id === card.marketId) || null
+      const releaseDate = getEstimatedReleaseDate(card.title, index)
       
       return {
         title: card.title,
         marketId: card.marketId,
         contract,
-        releaseDate: getEstimatedReleaseDate(card.title, index),
+        releaseDate,
         company: getModelCompany(card.title),
       }
     }).sort((a, b) => a.releaseDate.getTime() - b.releaseDate.getTime())
@@ -927,20 +879,71 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
   if (modelData.length === 0) {
     return <div className="text-ink-500 text-center py-4">No model releases to display</div>
   }
+
+  // Get earliest and latest dates for timeline
+  const earliestDate = modelData[0]?.releaseDate
+  const latestDate = modelData[modelData.length - 1]?.releaseDate
   
+  // Calculate position on timeline (0-100%)
+  const getTimelinePosition = (date: Date) => {
+    if (!earliestDate || !latestDate) return 0
+    const timeRange = latestDate.getTime() - earliestDate.getTime()
+    if (timeRange === 0) return 50 // If all dates are the same
+    
+    const position = ((date.getTime() - earliestDate.getTime()) / timeRange) * 100
+    return Math.max(5, Math.min(95, position)) // Keep within 5-95% range for visual appeal
+  }
+
   return (
-    <div className="bg-canvas-50 dark:bg-canvas-900 rounded-lg p-4 border border-ink-200 dark:border-ink-800 mt-2">
-      <div className="text-sm text-ink-500 dark:text-ink-400 mb-3 italic">
-        Scroll horizontally to see more →
+    <div className="rounded-lg p-4 border border-ink-200 dark:border-ink-400 mt-2">
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-xs text-ink-400 dark:text-ink-500">
+          {formatDateFn(earliestDate, 'MMM yyyy')} — {formatDateFn(latestDate, 'MMM yyyy')}
+        </div>
       </div>
-      <Timeline>
+      
+      {/* Simple grid view that shows all models with their dates */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-6">
         {modelData.map((model) => (
-          <ModelTimelineItem
-            key={model.marketId}
-            model={model}
-          />
+          <div key={model.marketId} className="flex justify-center">
+            <ModelCard model={model} withDate />
+          </div>
         ))}
-      </Timeline>
+      </div>
+      
+      {/* Horizontal timeline underneath */}
+      <div className="relative mt-10 h-20 px-6">
+        {/* Timeline line */}
+        <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-fuchsia-200 dark:bg-fuchsia-900"></div>
+        
+        {/* Timeline dates (beginning and end) */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
+          {formatDateFn(earliestDate, 'MMM')}
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
+          {formatDateFn(latestDate, 'MMM')}
+        </div>
+        
+        {/* Model dots on timeline */}
+        {modelData.map((model) => (
+          <div 
+            key={model.marketId}
+            className="absolute top-1/2 -translate-y-1/2 group"
+            style={{
+              left: `calc(${getTimelinePosition(model.releaseDate)}% + 1.5rem - ${getTimelinePosition(model.releaseDate) * 0.03}rem)`,
+            }}
+          >
+            {/* Dot with tooltip */}
+            <div className="w-4 h-4 rounded-full bg-fuchsia-600 dark:bg-fuchsia-500 cursor-pointer hover:scale-125 transition-transform"></div>
+            
+            {/* Tooltip on hover showing model name */}
+            <div className="opacity-0 group-hover:opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-white dark:bg-gray-800 text-xs font-medium shadow-md rounded pointer-events-none whitespace-nowrap z-10 transition-opacity">
+              {model.title}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white dark:bg-gray-800 transform rotate-45"></div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
