@@ -864,10 +864,11 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       
       {/* AGI Clock Card */}
       {liveWhenAgi && (
-        <CardBase
-          onClick={() => window.location.href = contractPath(liveWhenAgi)}
-          className="fade-in group relative bg-canvas-50"
-          minHeight=""
+        <div className="mt-12 pt-8 border-t border-ink-200 dark:border-ink-800/50">
+          <CardBase
+            onClick={() => window.location.href = contractPath(liveWhenAgi)}
+            className="fade-in group relative mx-auto"
+            minHeight=""
         >
           <Row className="justify-between">
             <Link
@@ -909,6 +910,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             </Col>
           </Row>
         </CardBase>
+        </div>
       )}
     </Col>
   )
