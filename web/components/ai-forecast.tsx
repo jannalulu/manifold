@@ -782,12 +782,12 @@ function getEstimatedReleaseDate(title: string, index: number): Date {
   const year = now.getFullYear()
   
   // Assign dates based on model names
-  if (title.includes('GPT-5')) return new Date(2025, 5, 15) // June 2025
-  if (title.includes('Claude 3.7')) return new Date(2024, 8, 1) // Sept 2024
-  if (title.includes('Gemini 3')) return new Date(2024, 4, 10) // May 2024
-  if (title.includes('Grok 4')) return new Date(2024, 11, 20) // Dec 2024
-  if (title.includes('Deepseek R2')) return new Date(2024, 7, 5) // Aug 2024
-  if (title.includes('Deepseek V4')) return new Date(2025, 2, 15) // March 2025
+  if (title.includes('GPT-5')) return new Date(2025, 5, 15)
+  if (title.includes('Claude 3.7')) return new Date(2025, 8, 1)
+  if (title.includes('Gemini 3')) return new Date(2025, 4, 10)
+  if (title.includes('Grok 4')) return new Date(2025, 11, 20)
+  if (title.includes('Deepseek R2')) return new Date(2025, 7, 5)
+  if (title.includes('Deepseek V4')) return new Date(2026, 2, 15)
   
   // Default fallback - spread throughout the year
   return new Date(year, index % 12, 15)
@@ -805,59 +805,21 @@ function getModelCompany(title: string): string {
 // Model data structure used throughout timeline components
 
 // Get company logo component based on company
+type Company = 'OPENAI' | 'ANTHROPIC' | 'GOOGLE' | 'GROK' | 'DEEPMIND';
+
 function getCompanyLogoIcon(company: string) {
-  switch (company) {
-    case 'OPENAI':
-      return <SiOpenai className="h-8 w-8 text-green-600" />;
-    case 'ANTHROPIC':
-      return <SiAnthropic className="h-8 w-8 text-blue-600" />;
-    case 'GOOGLE':
-      return <SiGooglegemini className="h-8 w-8 text-red-500" />;
-    case 'GROK':
-      return <RiTwitterXLine className="h-8 w-8 text-black dark:text-white" />;
-    case 'DEEPMIND':
-      return <GiSpermWhale className="h-8 w-8 text-teal-500" />;
-    default:
-      return <FaQuestionCircle className="h-8 w-8 text-gray-500" />;
-  }
-}
-
-// Custom card item for react-chrono timeline
-function ModelCard({ model, withDate = false }: { 
-  model: {
-    title: string
-    marketId: string
-    company: string
-    releaseDate: Date
-    contract?: Contract | null
-  }
-  withDate?: boolean 
-}) {
-  const contract = model.contract
-  const liveContract = contract ? useLiveContract(contract) : null
+  const icons: Record<Company, JSX.Element> = {
+    'OPENAI': <SiOpenai className="w-5 h-5" />,
+    'ANTHROPIC': <SiAnthropic className="w-5 h-5" />,
+    'GOOGLE': <SiGooglegemini className="w-5 h-5" />,
+    'GROK': <RiTwitterXLine className="w-5 h-5" />,
+    'DEEPMIND': <GiSpermWhale className="w-5 h-5" />
+  };
   
-  return (
-    <Link
-      href={liveContract ? contractPath(liveContract) : `#${model.marketId}`}
-      className="block w-[120px]"
-    >
-      <div className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all hover:bg-canvas-100 dark:hover:bg-canvas-800 border border-transparent hover:border-fuchsia-300 dark:hover:border-fuchsia-800">
-        <div className="h-10 w-10 rounded-full bg-canvas-100 dark:bg-canvas-800 mb-1 flex items-center justify-center transition-transform hover:scale-110">
-          {getCompanyLogoIcon(model.company)}
-        </div>
-        <div className="text-center font-medium text-ink-700 hover:text-fuchsia-700 dark:text-ink-300 dark:hover:text-fuchsia-500 text-xs leading-tight">
-          {model.title}
-        </div>
-        {withDate && (
-          <div className="text-center text-gray-500 dark:text-gray-400 text-xs mt-1">
-            {formatDateFn(model.releaseDate, 'MMM yyyy')}
-          </div>
-        )}
-      </div>
-    </Link>
-  )
+  return icons[company as Company] || <FaQuestionCircle className="w-5 h-5" />;
 }
 
+// Timeline
 function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps) {
   // Prepare model data with release dates and company info
   const modelData = useMemo(() => {
