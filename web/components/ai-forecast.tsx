@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
+import clsx from 'clsx'
 import { BinaryContract, CPMMNumericContract, Contract, contractPath } from 'common/contract'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
@@ -11,6 +12,7 @@ import { NumericBetPanel } from 'web/components/answers/numeric-bet-panel'
 import { ClickFrame } from 'web/components/widgets/click-frame'
 import Link from 'next/link'
 import { formatPercent } from 'common/util/format'
+import { format as formatDateFn } from 'date-fns'
 import { getDisplayProbability } from 'common/calculate'
 import { SiOpenai, SiGooglegemini, SiAnthropic} from 'react-icons/si'
 import { RiTwitterXLine } from 'react-icons/ri'
@@ -18,6 +20,8 @@ import { LuLink, LuInfo } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
 import { LiaKiwiBirdSolid } from "react-icons/lia"
+import { IoLogoGoogle } from "react-icons/io5"
+import { FaQuestionCircle, FaUser } from "react-icons/fa"
 
 // Shared background pattern for all cards
 const BG_PATTERN_LIGHT = "bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
@@ -328,6 +332,70 @@ function getAccentColor(type: string) {
   }
 }
 
+// Helper function to get a color for each company
+function getCompanyColor(corp: string) {
+  const colorMap: Record<string, string> = {
+    ANTHROPIC: 'bg-blue-500',
+    OPENAI: 'bg-green-500',
+    GOOGLE: 'bg-red-400',
+    META: 'bg-indigo-500',
+    MISTRAL: 'bg-purple-500',
+    COHERE: 'bg-yellow-500',
+    DEEPMIND: 'bg-teal-500',
+    default: 'bg-primary-600'
+  }
+  
+  return colorMap[corp] || colorMap.default
+}
+
+// Horizontal timeline component for model releases
+interface TimelineProps {
+  children: React.ReactNode
+  className?: string
+}
+
+function Timeline(props: TimelineProps) {
+  const { children, className } = props
+  return (
+    <div className={clsx('relative my-4', className)}>
+      {/* Timeline line - horizontal */}
+      <div className="absolute left-0 w-full h-0.5 bg-gray-300 dark:bg-gray-700 top-[70px]"></div>
+      {/* Timeline items - horizontal row with overflow scrolling */}
+      <div className="relative z-10 flex overflow-x-auto py-6 gap-8 px-2 pb-4 snap-x scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+interface TimelineItemProps {
+  date: Date
+  children: React.ReactNode
+  className?: string
+}
+
+function TimelineItem(props: TimelineItemProps) {
+  const { date, children, className } = props
+  
+  return (
+    <div className="flex flex-col items-center snap-start min-w-[140px] w-[140px] first:ml-4 last:mr-4">
+      {/* Model content */}
+      <div className="mb-6">{children}</div>
+      
+      {/* Dot on timeline */}
+      <div className={clsx(
+        'z-20 h-4 w-4 rounded-full mb-3',
+        className || 'bg-fuchsia-600 dark:bg-fuchsia-500'
+      )}></div>
+      
+      {/* Date display */}
+      <div className="text-sm font-medium text-gray-600 dark:text-gray-400 text-center">
+        {formatDateFn(date, 'MMM yyyy')}
+      </div>
+    </div>
+  )
+}
+
 // Get gradient based on card type
 function getGradient(type: string, isText = true) {
   const textPrefix = isText ? 'text-transparent bg-clip-text ' : '';
@@ -394,17 +462,12 @@ function CapabilityCard({
   className?: string
 }) {
   // Find the actual contract by ID
-  const contract = contracts.find(c => c.id === marketId)
+  const contract = useMemo(() => contracts.find(c => c.id === marketId), [contracts, marketId])
   console.log(`[${displayType}] ${title} - contract found:`, !!contract, 'id:', marketId)
+  
+  // Always call hooks unconditionally
   const liveContract = contract ? useLiveContract(contract) : null
   console.log(`[${displayType}] ${title} - liveContract:`, !!liveContract, 'path:', liveContract ? contractPath(liveContract) : 'N/A')
-  
-  // Get the probability if it's a binary contract
-  const probability = liveContract && liveContract.outcomeType === 'BINARY'
-    ? liveContract.prob !== undefined 
-      ? liveContract.prob
-      : getDisplayProbability(liveContract as BinaryContract)
-    : null
   
   // Get the expected value if it's a numeric contract
   const numericValue = liveContract && liveContract.outcomeType === 'NUMBER' 
@@ -498,12 +561,10 @@ function CapabilityCard({
     displayValue = formatPercent(prob)
   } 
 } else {
-  const probability = 0.25
-  displayValue = probability !== null 
-    ? formatPercent(probability) 
-    : numericValue !== null 
-      ? numericValue.toFixed(1)
-      : '—'
+  // Default fallback
+  displayValue = numericValue !== null 
+    ? numericValue.toFixed(1)
+    : formatPercent(0.25)
   }
   
   // Create click handler for the card
@@ -757,6 +818,133 @@ function getCompanyLogo(companyName: string): React.ComponentType | null {
   }
 }
 
+// For model releases: Displays model releases on a timeline
+interface ModelReleasesTimelineProps {
+  cards: AICapabilityCard[]
+  contracts: Contract[]
+}
+
+// Helper functions for model release timeline
+function getEstimatedReleaseDate(title: string, index: number): Date {
+  const now = new Date()
+  const year = now.getFullYear()
+  
+  // Assign dates based on model names
+  if (title.includes('GPT-5')) return new Date(2025, 5, 15) // June 2025
+  if (title.includes('Claude 3.7')) return new Date(2024, 8, 1) // Sept 2024
+  if (title.includes('Gemini 3')) return new Date(2024, 4, 10) // May 2024
+  if (title.includes('Grok 4')) return new Date(2024, 11, 20) // Dec 2024
+  if (title.includes('Deepseek R2')) return new Date(2024, 7, 5) // Aug 2024
+  if (title.includes('Deepseek V4')) return new Date(2025, 2, 15) // March 2025
+  
+  // Default fallback - spread throughout the year
+  return new Date(year, index % 12, 15)
+}
+
+function getModelCompany(title: string): string {
+  if (title.includes('GPT')) return 'OPENAI'
+  if (title.includes('Claude')) return 'ANTHROPIC'
+  if (title.includes('Gemini')) return 'GOOGLE'
+  if (title.includes('Grok')) return 'GROK'
+  if (title.includes('Deepseek')) return 'DEEPMIND'
+  return 'default'
+}
+
+// Timeline item component for model releases
+interface ModelTimelineItemProps {
+  model: {
+    title: string
+    marketId: string
+    company: string
+    releaseDate: Date
+    contract?: Contract | null
+  }
+  position?: 'left' | 'right' // Position no longer used for horizontal timeline
+}
+
+// Get company logo component based on company
+function getCompanyLogoIcon(company: string) {
+  switch (company) {
+    case 'OPENAI':
+      return <SiOpenai className="h-8 w-8 text-green-600" />;
+    case 'ANTHROPIC':
+      return <SiAnthropic className="h-8 w-8 text-blue-600" />;
+    case 'GOOGLE':
+      return <SiGooglegemini className="h-8 w-8 text-red-500" />;
+    case 'GROK':
+      return <RiTwitterXLine className="h-8 w-8 text-black dark:text-white" />;
+    case 'DEEPMIND':
+      return <GiSpermWhale className="h-8 w-8 text-teal-500" />;
+    default:
+      return <FaQuestionCircle className="h-8 w-8 text-gray-500" />;
+  }
+}
+
+function ModelTimelineItem({ model }: ModelTimelineItemProps) {
+  const contract = model.contract
+  const liveContract = contract ? useLiveContract(contract) : null
+  
+  return (
+    <TimelineItem
+      key={model.marketId}
+      date={model.releaseDate}
+      className={getCompanyColor(model.company)}
+    >
+      <Link
+        href={liveContract ? contractPath(liveContract) : `#${model.marketId}`}
+        className="block w-full"
+      >
+        <div className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all hover:bg-canvas-50 dark:hover:bg-canvas-50/10">
+          <div className="h-10 w-10 rounded-full bg-canvas-50 dark:bg-canvas-700 mb-1 flex items-center justify-center transition-transform hover:scale-110">
+            {getCompanyLogoIcon(model.company)}
+          </div>
+          <div className="text-center font-medium text-primary-700 hover:text-primary-800 dark:text-primary-500 dark:hover:text-primary-400 mt-1 text-sm leading-tight">
+            {model.title}
+          </div>
+        </div>
+      </Link>
+    </TimelineItem>
+  )
+}
+
+function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps) {
+  // Prepare model data with release dates and company info
+  const modelData = useMemo(() => {
+    return cards.map((card, index) => {
+      // Find the contract
+      const contract = contracts.find(c => c.id === card.marketId) || null
+      
+      return {
+        title: card.title,
+        marketId: card.marketId,
+        contract,
+        releaseDate: getEstimatedReleaseDate(card.title, index),
+        company: getModelCompany(card.title),
+      }
+    }).sort((a, b) => a.releaseDate.getTime() - b.releaseDate.getTime())
+  }, [cards, contracts])
+  
+  if (modelData.length === 0) {
+    return <div className="text-ink-500 text-center py-4">No model releases to display</div>
+  }
+  
+  return (
+    <div className="bg-canvas-50 dark:bg-canvas-900 rounded-lg p-4 border border-ink-200 dark:border-ink-800 mt-2">
+      <div className="text-sm text-ink-500 dark:text-ink-400 mb-3 italic">
+        Scroll horizontally to see more →
+      </div>
+      <Timeline>
+        {modelData.map((model) => (
+          <ModelTimelineItem
+            key={model.marketId}
+            model={model}
+          />
+        ))}
+      </Timeline>
+    </div>
+  )
+}
+
 export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastProps) {
   const liveWhenAgi = whenAgi && whenAgi.id ? useLiveContract(whenAgi) : null
   const expectedValueAGI = liveWhenAgi ? getNumberExpectedValue(liveWhenAgi) : 2030
@@ -834,31 +1022,40 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             </Row>
           </div>
           
-          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative rounded-lg ${CARD_BG_PATTERN}`}>
-            {capabilityCardsByType[type]?.map((card, idx) => {
-              // Special sizing for "monthly" type cards
-              let cardClassName = "";
-              
-              // For "monthly" cards - make first card 2/3 width and second 1/3 width
-              if (type === "monthly" && idx === 0) {
-                cardClassName = "md:col-span-2"; // first card takes 2/3 width on desktop
-              } else if (type === "monthly" && idx === 1) {
-                cardClassName = ""; // Second card takes 1/3 width (default)
-              }
-              
-              return (
-                <CapabilityCard 
-                  key={idx}
-                  title={card.title}
-                  marketId={card.marketId}
-                  type={card.type}
-                  displayType={card.displayType}
-                  contracts={contracts}
-                  className={cardClassName}
-                />
-              );
-            })}
-          </div>
+          {type === 'releases' ? (
+            // Display releases on a timeline
+            <ModelReleasesTimeline 
+              cards={capabilityCardsByType[type] || []}
+              contracts={contracts}
+            />
+          ) : (
+            // Display other card types in a grid
+            <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative rounded-lg ${CARD_BG_PATTERN}`}>
+              {capabilityCardsByType[type]?.map((card, idx) => {
+                // Special sizing for "monthly" type cards
+                let cardClassName = "";
+                
+                // For "monthly" cards - make first card 2/3 width and second 1/3 width
+                if (type === "monthly" && idx === 0) {
+                  cardClassName = "md:col-span-2"; // first card takes 2/3 width on desktop
+                } else if (type === "monthly" && idx === 1) {
+                  cardClassName = ""; // Second card takes 1/3 width (default)
+                }
+                
+                return (
+                  <CapabilityCard 
+                    key={idx}
+                    title={card.title}
+                    marketId={card.marketId}
+                    type={card.type}
+                    displayType={card.displayType}
+                    contracts={contracts}
+                    className={cardClassName}
+                  />
+                );
+              })}
+            </div>
+          )}
         </Col>
       ))}
       
