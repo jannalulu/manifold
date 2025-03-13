@@ -637,7 +637,6 @@ function CapabilityCard({
       )
     }
     
-    // For non-monthly types, keep the original display but match text styling with monthly
     return (
       <CardBase onClick={clickHandler} className={className}>
         <Col className="h-full space-y-2">
@@ -649,14 +648,19 @@ function CapabilityCard({
             />
           </div>
           
-          <div className="rounded-md p-3 flex-1 flex flex-col items-center justify-center">
-            <div className="text-3xl font-bold text-center">
-              <span className={getGradient(type)}>
-                {topModel.text}
-              </span>
+          <div className="flex flex-col h-full justify-between">
+            {/* Main content - centered model name */}
+            <div className="rounded-md p-3 flex-1 flex items-center justify-center">
+              <div className="text-3xl font-bold text-center">
+                <span className={getGradient(type)}>
+                  {topModel.text}
+                </span>
+              </div>
             </div>
-            <div className="text-base text-ink-600 mt-1 font-medium">
-              {formatPercent(topModel.probability)}
+            
+            {/* Bottom-aligned probability display */}
+            <div className="text-ink-600 text-sm mt-auto text-left w-full px-2 pb-1">
+              Probability: <span className="font-medium">{formatPercent(topModel.probability)}</span>
             </div>
           </div>
         </Col>
