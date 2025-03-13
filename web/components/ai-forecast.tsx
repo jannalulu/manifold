@@ -637,7 +637,7 @@ function CapabilityCard({
       )
     }
     
-    // For non-monthly types, keep the original display
+    // For non-monthly types, keep the original display but match text styling with monthly
     return (
       <CardBase onClick={clickHandler} className={className}>
         <Col className="h-full space-y-2">
@@ -655,10 +655,8 @@ function CapabilityCard({
                 {topModel.text}
               </span>
             </div>
-            <div className="text-lg font-medium mt-4">
-              <span className={getGradient(type)}>
-                {formatPercent(topModel.probability)}
-              </span>
+            <div className="text-base text-ink-600 mt-1 font-medium">
+              {formatPercent(topModel.probability)}
             </div>
           </div>
         </Col>
