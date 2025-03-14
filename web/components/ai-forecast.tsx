@@ -19,7 +19,7 @@ import { LuLink, LuInfo } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
 import { LiaKiwiBirdSolid } from "react-icons/lia"
-import { FaQuestionCircle } from "react-icons/fa"
+import { MdChevronRight, MdChevronLeft } from "react-icons/md"
 
 // Shared background pattern for all cards
 const BG_PATTERN_LIGHT = "bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
@@ -814,22 +814,14 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     return <div className="text-ink-500 text-center py-4">No model releases to display</div>
   }
 
-  // Set dynamic timeline dates - only show 6 months at a time
+ // Only show 6 months at a time
   const currentDate = new Date()
   const startDate = new Date(currentDate)
-  startDate.setMonth(currentDate.getMonth() + 1) // Start with next month
+  startDate.setMonth(currentDate.getMonth()) // Start with this month
   startDate.setDate(1) // Set to first of month
   
-  // Set end date to 6 months from start date
   const endDate = new Date(startDate)
   endDate.setMonth(startDate.getMonth() + 5) // 6 months total
-  
-  // Find the range of all model dates to determine if scroll is needed
-  const earliestModelDate = modelData.length ? 
-    modelData.reduce((earliest, model) => 
-      model.releaseDate < earliest ? model.releaseDate : earliest, 
-      modelData[0].releaseDate
-    ) : startDate;
     
   const latestModelDate = modelData.length ? 
     modelData.reduce((latest, model) => 
@@ -846,16 +838,16 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
   // Function to handle scrolling forward in time
   const scrollForward = () => {
     const newStartDate = new Date(startDate);
-    newStartDate.setMonth(startDate.getMonth() + 3); // Advance 3 months
+    newStartDate.setMonth(startDate.getMonth() + 5); // Advance 6 months
     if (newStartDate <= latestModelDate) {
-      setTimelineScrollPosition(timelineScrollPosition + 3);
+      setTimelineScrollPosition(timelineScrollPosition + 5);
     }
   };
   
   // Function to handle scrolling backward in time
   const scrollBackward = () => {
-    if (timelineScrollPosition >= 3) {
-      setTimelineScrollPosition(timelineScrollPosition - 3);
+    if (timelineScrollPosition > 0) {
+      setTimelineScrollPosition(timelineScrollPosition - 5);
     }
   };
   
@@ -900,33 +892,29 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
 
   return (
     <div className="rounded-lg p-4 mx-2 md:mx-4">
-      {/* Timeline container with scroll buttons if needed */}
       <div className="relative mb-10 mt-12 px-4">
-        {/* Scroll buttons - only show if scrolling is needed */}
-        {scrollNeeded && (
-          <div className="flex justify-between mb-4">
-            <button 
-              onClick={scrollBackward}
-              disabled={timelineScrollPosition === 0}
-              className={`p-2 rounded-full ${timelineScrollPosition === 0 ? 'text-gray-400' : 'text-primary-600 hover:bg-primary-50'}`}
-              aria-label="Scroll backward in time"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-            </button>
+        {
+          <div className="flex justify-between absolute top-[-60px] left-0 right-0 z-10 px-3">
+            {timelineScrollPosition > 0 && (
+              <button 
+                onClick={scrollBackward}
+                className="p-2 rounded-full text-primary-600"
+                aria-label="Scroll backward in time"
+              >
+                <MdChevronLeft className="h-6 w-6" />
+              </button>
+            )}
+            <div className="flex-grow"></div>
             <button 
               onClick={scrollForward}
               disabled={viewEndDate >= latestModelDate}
-              className={`p-2 rounded-full ${viewEndDate >= latestModelDate ? 'text-gray-400' : 'text-primary-600 hover:bg-primary-50'}`}
+              className={`p-2 rounded-full ${viewEndDate >= latestModelDate ? 'text-gray-400' : 'text-primary-600'}`}
               aria-label="Scroll forward in time"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
+              <MdChevronRight className="h-6 w-6" />
             </button>
           </div>
-        )}
+        }
         {/* Month markers and labels */}
         <div className="absolute left-0 right-0 top-[15px]">
           {monthMarkers.map((date, index) => {
