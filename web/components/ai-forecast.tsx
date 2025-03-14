@@ -827,29 +827,28 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     modelData.reduce((latest, model) => 
       model.releaseDate > latest ? model.releaseDate : latest, 
       modelData[0].releaseDate
-    ) : endDate;
-    
-  // Determine if scroll is needed (if model dates extend beyond our 9-month window)
-  const scrollNeeded = latestModelDate > endDate;
+    ) : endDate
   
   // Track scroll position with state
   const [timelineScrollPosition, setTimelineScrollPosition] = useState(0);
   
   // Function to handle scrolling forward in time
   const scrollForward = () => {
-    const newStartDate = new Date(startDate);
-    newStartDate.setMonth(startDate.getMonth() + 5); // Advance 6 months
+    // Calculate the new start date based on the current view end date
+    // This ensures we don't miss any models that were at the end of the previous page
+    const newStartDate = new Date(viewEndDate);
+    
     if (newStartDate <= latestModelDate) {
-      setTimelineScrollPosition(timelineScrollPosition + 5);
+      setTimelineScrollPosition(timelineScrollPosition + 5)
     }
-  };
+  }
   
   // Function to handle scrolling backward in time
   const scrollBackward = () => {
     if (timelineScrollPosition > 0) {
-      setTimelineScrollPosition(timelineScrollPosition - 5);
+      setTimelineScrollPosition(timelineScrollPosition - 5)
     }
-  };
+  }
   
   const viewStartDate = new Date(startDate);
   viewStartDate.setMonth(startDate.getMonth() + timelineScrollPosition);
@@ -880,7 +879,28 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     const timeRange = viewEndDate.getTime() - viewStartDate.getTime()
     if (timeRange === 0) return 0
     
+    // Calculate raw position as percentage
     const position = ((date.getTime() - viewStartDate.getTime()) / timeRange) * 100
+    
+    // Check if we're on the second page and need to handle models
+    // that would have been hidden from the first page (appearing at 90-100%)
+    if (timelineScrollPosition > 0) {
+      // Calculate where this date would have been on the previous page
+      const prevPageStartDate = new Date(startDate);
+      prevPageStartDate.setMonth(prevPageStartDate.getMonth() + (timelineScrollPosition - 5));
+      
+      const prevPageEndDate = new Date(prevPageStartDate);
+      prevPageEndDate.setMonth(prevPageEndDate.getMonth() + 5);
+      
+      const prevPageTimeRange = prevPageEndDate.getTime() - prevPageStartDate.getTime();
+      const prevPagePosition = ((date.getTime() - prevPageStartDate.getTime()) / prevPageTimeRange) * 100;
+      
+      // If this model would have been in the last 10% of the previous page (90-100%),
+      // and it's before the current page's normal range, move it to the beginning of this page
+      if (prevPagePosition > 90 && prevPagePosition <= 100 && position < 0) {
+        return 5; // Position at beginning of current page
+      }
+    }
     
     // Return position if it's within the visible range (0-100), otherwise return -1
     if (position >= 0 && position <= 100) {
@@ -920,7 +940,11 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
             {modelData.map((model) => {
               const position = getTimelinePosition(model.releaseDate)
 
-              if (position < 0 || position > 100) return null
+              // Don't show models that are in the last 10% of any page
+              // They'll show up at the beginning of the next page instead
+              const isNearEndOfPage = position > 90 && position <= 100;
+              
+              if (position < 0 || position > 100 || isNearEndOfPage) return null;
               
               return (
                 <Link
