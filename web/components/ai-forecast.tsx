@@ -770,6 +770,38 @@ function getCompanyLogo(companyName: string): React.ComponentType | null {
   }
 }
 
+// Get background color for model tag based on model name
+function getModelTagColor(modelName: string): string {
+  // Normalize the model name for matching
+  const normalizedName = modelName.trim().toLowerCase();
+  
+  // Company-specific color schemes
+  if (normalizedName.includes('gpt') || normalizedName.includes('openai')) {
+    return 'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-100';
+  }
+  if (normalizedName.includes('claude') || normalizedName.includes('anthropic')) {
+    return 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100';
+  }
+  if (normalizedName.includes('gemini') || normalizedName.includes('google')) {
+    return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100';
+  }
+  if (normalizedName.includes('grok') || normalizedName.includes('xai')) {
+    return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100';
+  }
+  if (normalizedName.includes('deepseek')) {
+    return 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-100';
+  }
+  if (normalizedName.includes('qwen') || normalizedName.includes('alibaba')) {
+    return 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100';
+  }
+  if (normalizedName.includes('mistral')) {
+    return 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100';
+  }
+  
+  // Default color for unknown models
+  return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100';
+}
+
 // For model releases: Displays model releases on a timeline
 interface ModelReleasesTimelineProps {
   cards: AICapabilityCard[]
@@ -976,10 +1008,10 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
                     transition: 'transform 0.2s ease-out'
                   }}
                 >
-                  {/* Model icon with name on the right */}
-                  <div className="flex items-center rounded-full py-1 px-2.5 hover:shadow-md transition-all">
-                    <AIModelIcon title={model.title} className="w-6 h-6 mr-1.5 text-primary-600 dark:text-primary-500" />
-                    <span className="text-sm font-medium whitespace-nowrap text-gray-900 dark:text-gray-100">{model.title}</span>
+                  {/* Model icon with name on the right - with background color */}
+                  <div className={`flex items-center ${getModelTagColor(model.title)} border-0 rounded-full py-1 px-2.5 hover:shadow-md transition-all`}>
+                    <AIModelIcon title={model.title} className="w-6 h-6 mr-1.5" />
+                    <span className="text-sm font-medium whitespace-nowrap">{model.title}</span>
                   </div>
                 </Link>
               ));
