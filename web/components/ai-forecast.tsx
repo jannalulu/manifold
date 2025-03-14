@@ -892,69 +892,72 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
 
   return (
     <div className="rounded-lg p-4 mx-2 md:mx-4">
-      <div className="relative mb-10 mt-12 px-4">
-        {
-          <div className="flex justify-between absolute top-[-60px] left-0 right-0 z-10 px-3">
-            {timelineScrollPosition > 0 && (
-              <button 
-                onClick={scrollBackward}
-                className="p-2 rounded-full text-primary-600"
-                aria-label="Scroll backward in time"
-              >
-                <MdChevronLeft className="h-6 w-6" />
-              </button>
-            )}
-            <div className="flex-grow"></div>
-            <button 
-              onClick={scrollForward}
-              disabled={viewEndDate >= latestModelDate}
-              className={`p-2 rounded-full ${viewEndDate >= latestModelDate ? 'text-gray-400' : 'text-primary-600'}`}
-              aria-label="Scroll forward in time"
-            >
-              <MdChevronRight className="h-6 w-6" />
-            </button>
-          </div>
-        }
-        {/* Month markers and labels */}
-        <div className="absolute left-0 right-0 top-[15px]">
-          {monthMarkers.map((date, index) => {
-            const position = (index / (monthMarkers.length - 1)) * 100
-            
-            return (
-              <div 
-                key={formatDateFn(date, 'yyyy-MM')} 
-                className="absolute"
-                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
-              >
-                {/* Month label positioned above the timeline */}
-                <div className="text-xs text-gray-600 dark:text-gray-400 text-center whitespace-nowrap mb-2">
-                  {formatDateFn(date, 'MMM yyyy')}
+      <div className="relative mb-10 mt-12 flex items-center">
+        {/* Left scroll button - only show if not on first page */}
+        {timelineScrollPosition > 0 && (
+          <button 
+            onClick={scrollBackward}
+            className="p-2 rounded-full text-primary-600 hover:bg-primary-50 flex-shrink-0 mr-1"
+            aria-label="Scroll backward in time"
+          >
+            <MdChevronLeft className="h-6 w-6" />
+          </button>
+        )}
+        
+        {/* Timeline content with shrunk width */}
+        <div className="relative flex-grow px-4">
+          {/* Month markers and labels */}
+          <div className="absolute left-0 right-0 top-[15px]">
+            {monthMarkers.map((date, index) => {
+              const position = (index / (monthMarkers.length - 1)) * 100
+              
+              return (
+                <div 
+                  key={formatDateFn(date, 'yyyy-MM')} 
+                  className="absolute"
+                  style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                >
+                  {/* Month label positioned above the timeline */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 text-center whitespace-nowrap mb-2">
+                    {formatDateFn(date, 'MMM yyyy')}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+          
+          {/* Timeline line */}
+          <div className="absolute left-0 right-0 h-1 bg-fuchsia-700 dark:bg-fuchsia-500 top-0"></div>
+          
+          {/* Tick marks */}
+          <div className="absolute left-0 right-0 top-0">
+            {monthMarkers.map((date, index) => {
+              const position = (index / (monthMarkers.length - 1)) * 100
+              
+              return (
+                <div 
+                  key={`tick-${formatDateFn(date, 'yyyy-MM')}`} 
+                  className="absolute"
+                  style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                >
+                  {/* Tick marks */}
+                  <div className="h-3 w-0.5 bg-fuchsia-700 dark:bg-fuchsia-500 -mt-1"></div>
+                </div>
+              )
+            })}
+          </div>
         </div>
         
-        {/* Timeline line */}
-        <div className="absolute left-0 right-0 h-1 bg-fuchsia-700 dark:bg-fuchsia-500 top-0"></div>
-        
-        {/* Tick marks */}
-        <div className="absolute left-0 right-0 top-0">
-          {monthMarkers.map((date, index) => {
-            const position = (index / (monthMarkers.length - 1)) * 100
-            
-            return (
-              <div 
-                key={`tick-${formatDateFn(date, 'yyyy-MM')}`} 
-                className="absolute"
-                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
-              >
-                {/* Tick marks */}
-                <div className="h-3 w-0.5 bg-fuchsia-700 dark:bg-fuchsia-500 -mt-1"></div>
-              </div>
-            )
-          })}
-        </div>
+        {/* Right scroll button */}
+        {viewEndDate < latestModelDate && (
+          <button 
+            onClick={scrollForward}
+            className="p-2 rounded-full text-primary-600 hover:bg-primary-50 flex-shrink-0 ml-1"
+            aria-label="Scroll forward in time"
+          >
+            <MdChevronRight className="h-6 w-6" />
+          </button>
+        )}
         
         {modelData.map((model) => {
            const position = getTimelinePosition(model.releaseDate)
