@@ -883,7 +883,7 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     const position = ((date.getTime() - viewStartDate.getTime()) / timeRange) * 100
     
     // Check if we're on the second page and need to handle models
-    // that would have been hidden from the first page (appearing at 90-100%)
+    // that would have been hidden from the first page (appearing at 95-100%)
     if (timelineScrollPosition > 0) {
       // Calculate where this date would have been on the previous page
       const prevPageStartDate = new Date(startDate);
@@ -895,9 +895,9 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
       const prevPageTimeRange = prevPageEndDate.getTime() - prevPageStartDate.getTime();
       const prevPagePosition = ((date.getTime() - prevPageStartDate.getTime()) / prevPageTimeRange) * 100;
       
-      // If this model would have been in the last 10% of the previous page (90-100%),
+      // If this model would have been in the last 10% of the previous page (95-100%),
       // and it's before the current page's normal range, move it to the beginning of this page
-      if (prevPagePosition > 90 && prevPagePosition <= 100 && position < 0) {
+      if (prevPagePosition > 95 && prevPagePosition <= 100 && position < 0) {
         return 5; // Position at beginning of current page
       }
     }
@@ -942,7 +942,7 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
 
               // Don't show models that are in the last 10% of any page
               // They'll show up at the beginning of the next page instead
-              const isNearEndOfPage = position > 90 && position <= 100;
+              const isNearEndOfPage = position > 95 && position <= 100;
               
               if (position < 0 || position > 100 || isNearEndOfPage) return null;
               
