@@ -1,26 +1,16 @@
 import React from 'react'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
 import { ClickFrame } from 'web/components/widgets/click-frame'
-import Link from 'next/link'
 import { Timeline, TimelineItemData } from './timeline'
-import { CopyLinkOrShareButton } from 'web/components/buttons/copy-link-button'
 
 export interface TimelineCardProps {
-  title: string
-  description?: string
   items: TimelineItemData[]
   path?: string
   className?: string
   lineColor?: string
-  shareUrl?: string
-  shareEventName?: string
   backgroundColor?: string
 }
 
 export function TimelineCard({
-  title,
-  description,
   items,
   path,
   className = '',
@@ -29,29 +19,11 @@ export function TimelineCard({
 }: TimelineCardProps) {
   const cardContent = (
     <>
-      <Row className="justify-between">
-        {path ? (
-          <Link
-            href={path}
-            className="hover:text-primary-700 grow items-start font-semibold transition-colors hover:underline sm:text-lg"
-          >
-            {title}
-          </Link>
-        ) : (
-          <div className="grow items-start font-semibold sm:text-lg">
-            {title}
-          </div>
-        )}
-      </Row>
-      
-      {description && (
-        <div className="text-ink-500 text-sm mt-1">
-          {description}
-        </div>
-      )}
+      {/* Padding at the top to match the original component with title and description */}
+      <div className="pt-4"></div>
 
       {/* Timeline with padding to ensure items don't overflow the card */}
-      <div className="mt-4 mb-4 pb-16">
+      <div className="mb-4 pb-16">
         <Timeline 
           items={items} 
           lineColor={lineColor} 

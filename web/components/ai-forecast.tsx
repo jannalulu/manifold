@@ -847,13 +847,9 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
 
   return (
     <TimelineCard
-      title="Model Release Timeline"
-      description="Expected release dates for upcoming AI models"
       items={timelineItems}
       lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
       backgroundColor="bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 dark:from-fuchsia-800/40 dark:to-fuchsia-700/50"
-      shareUrl={`https://${ENV_CONFIG.domain}/${ENDPOINT}`}
-      shareEventName="copy ai model timeline link"
     />
   )
 }
