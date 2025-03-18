@@ -158,8 +158,8 @@ export const Timeline = ({
   }
 
   return (
-    <div className={`rounded-lg p-4 mx-2 md:mx-4 ${className}`}>
-      <div className="relative mb-10 mt-12">
+    <div className={`${className}`}>
+      <div className="relative mb-8 mt-10">
         {/* Main container for timeline and item icons */}
         <div className="relative w-full px-8">
           {timelineScrollPosition > 0 && (
@@ -183,7 +183,7 @@ export const Timeline = ({
           )}
         
           {/* Item icons with collision detection */}
-          <div className="absolute left-0 right-0 top-[-50px] w-full">
+          <div className="absolute left-0 right-0 top-[-60px] w-full h-[60px] overflow-visible">
             {(() => {
               // First, get all items that would be visible
               const visibleItems = sortedItems

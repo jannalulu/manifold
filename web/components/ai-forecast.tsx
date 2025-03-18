@@ -7,7 +7,7 @@ import { CopyLinkOrShareButton } from 'web/components/buttons/copy-link-button'
 import { useLiveContract } from 'web/hooks/use-contract'
 import { getNumberExpectedValue } from 'common/src/number'
 import { Clock } from 'web/components/clock/clock'
-import { Timeline, TimelineItemData } from 'web/components/timeline'
+import { Timeline, TimelineCard, TimelineItemData } from 'web/components/timeline'
 import { NumericBetPanel } from 'web/components/answers/numeric-bet-panel'
 import { ClickFrame } from 'web/components/widgets/click-frame'
 import Link from 'next/link'
@@ -846,9 +846,14 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
   }
 
   return (
-    <Timeline 
-      items={timelineItems} 
-      lineColor="bg-fuchsia-700 dark:bg-fuchsia-500" 
+    <TimelineCard
+      title="Model Release Timeline"
+      description="Expected release dates for upcoming AI models"
+      items={timelineItems}
+      lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
+      backgroundColor="bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 dark:from-fuchsia-800/40 dark:to-fuchsia-700/50"
+      shareUrl={`https://${ENV_CONFIG.domain}/${ENDPOINT}`}
+      shareEventName="copy ai model timeline link"
     />
   )
 }

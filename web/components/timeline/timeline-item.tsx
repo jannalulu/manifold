@@ -27,7 +27,8 @@ export const TimelineItem = ({ item, position, verticalOffset }: TimelineItemPro
   const itemStyle = {
     left: `${safePosition}%`,
     transform: `translateX(-50%) translateY(${verticalOffset}px)`,
-    transition: 'transform 0.2s ease-out'
+    transition: 'transform 0.2s ease-out',
+    zIndex: verticalOffset !== 0 ? 2 : 1 // Items that are offset get higher z-index
   }
 
   // If path is provided, make it a link
