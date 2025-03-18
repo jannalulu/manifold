@@ -10,18 +10,18 @@ import { TimelineItem } from './timeline-item'
 // Type for model data
 export type TimelineItemData = {
   title: string
-  path?: string // Optional URL or path to navigate to when clicked
+  path?: string // URL to market
   releaseDate: Date
-  icon?: React.ReactNode // Optional icon for display
-  probability?: number // Optional probability value (0-1)
+  icon?: React.ReactNode
+  probability?: number
 }
 
 export interface TimelineProps {
   items: TimelineItemData[]
-  startDate?: Date // Optional custom start date
-  endDate?: Date // Optional custom end date
+  startDate?: Date
+  endDate?: Date
   className?: string
-  lineColor?: string // Optional custom color for the timeline line
+  lineColor?: string
 }
 
 export const Timeline = ({ 
@@ -31,14 +31,14 @@ export const Timeline = ({
   className = '',
   lineColor = 'bg-fuchsia-700 dark:bg-fuchsia-500'
 }: TimelineProps) => {
-  // Sort timeline items by release date
+  // Sort by release date
   const sortedItems = [...items].sort((a, b) => a.releaseDate.getTime() - b.releaseDate.getTime())
   
-  // Determine date range for the timeline
+  // Timeline range
   const currentDate = new Date()
   const startDate = customStartDate || new Date(currentDate)
-  startDate.setMonth(currentDate.getMonth()) // Start with this month
-  startDate.setDate(1) // Set to first of month
+  startDate.setMonth(currentDate.getMonth())
+  startDate.setDate(1)
   
   const endDate = customEndDate || new Date(startDate)
   endDate.setMonth(startDate.getMonth() + 5) // 6 months total
@@ -52,7 +52,7 @@ export const Timeline = ({
   // Track scroll position with state
   const [timelineScrollPosition, setTimelineScrollPosition] = useState(0)
   
-  // Function to handle scrolling forward in time
+  // Handle scrolling forward in time
   const scrollForward = () => {
     const newStartDate = new Date(viewEndDate)
     
@@ -61,7 +61,7 @@ export const Timeline = ({
     }
   }
   
-  // Function to handle scrolling backward in time
+  // Handle scrolling backward in time
   const scrollBackward = () => {
     if (timelineScrollPosition > 0) {
       setTimelineScrollPosition(timelineScrollPosition - 5)
@@ -100,8 +100,7 @@ export const Timeline = ({
     // Calculate raw position as percentage
     const position = ((date.getTime() - viewStartDate.getTime()) / timeRange) * 100
     
-    // Check if we're on the second page and need to handle items
-    // that would have been hidden from the first page (appearing at 95-100%)
+    // If on second page, show items not previously shown
     if (timelineScrollPosition > 0) {
       // Calculate where this date would have been on the previous page
       const prevPageStartDate = new Date(startDate)
@@ -113,8 +112,7 @@ export const Timeline = ({
       const prevPageTimeRange = prevPageEndDate.getTime() - prevPageStartDate.getTime()
       const prevPagePosition = ((date.getTime() - prevPageStartDate.getTime()) / prevPageTimeRange) * 100
       
-      // If this item would have been in the last 10% of the previous page (95-100%),
-      // and it's before the current page's normal range, move it to the beginning of this page
+      // Move to beginning of page if previously shown
       if (prevPagePosition > 95 && prevPagePosition <= 100 && position < 0) {
         return 5 // Position at beginning of current page
       }
@@ -124,7 +122,7 @@ export const Timeline = ({
     if (position >= 0 && position <= 100) {
       return position
     } else {
-      return -1 // Indicates the date is outside the visible timeline
+      return -1
     }
   }
 
