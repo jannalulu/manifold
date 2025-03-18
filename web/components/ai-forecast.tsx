@@ -156,20 +156,6 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     displayType: 'binary-odds'
   },
   {
-    title: 'CodeForces Top Score',
-    description: '>80% on Frontier Math by EOY',
-    marketId: 'RSAcZtOZyl',
-    type: 'benchmark',
-    displayType: 'top-one-mcq'
-  },
-    {
-    title: 'Frontier Math Top Score',
-    description: 'top performance on frontier math',
-    marketId: 'Uu5q0usuQg',
-    type: 'benchmark',
-    displayType: 'top-one-mcq'
-  },
-  {
     title: 'SWE Bench Top Score',
     description: 'Top SWE Bench score by EOY',
     marketId: 'placeholder-2',
@@ -182,6 +168,20 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     marketId: 'tzsZCn85RQ',
     type: 'benchmark',
     displayType: 'binary-odds'
+  },
+  {
+    title: 'CodeForces Top Score',
+    description: '>80% on Frontier Math by EOY',
+    marketId: 'RSAcZtOZyl',
+    type: 'benchmark',
+    displayType: 'top-one-mcq'
+  },
+    {
+    title: 'Frontier Math Top Score',
+    description: 'top performance on frontier math',
+    marketId: 'Uu5q0usuQg',
+    type: 'benchmark',
+    displayType: 'top-one-mcq'
   },
   
   // Prizes
@@ -336,7 +336,7 @@ function getAccentColor(type: string) {
     case 'benchmark': return 'text-teal-700 dark:text-teal-500';
     case 'prize': return 'text-amber-700 dark:text-amber-500';
     case 'misuse': return 'text-rose-700 dark:text-rose-500';
-    case '2028-forecast': return 'text-cyan-700 dark:text-cyan-500';
+    case '2028-forecast': return 'text-sky-700 dark:text-sky-500';
     default: return 'text-primary-600 dark:text-primary-500';
   }
 }
@@ -746,10 +746,10 @@ function CapabilityCard({
                   {type === 'benchmark' && title.includes('Frontier Math') && 'An LLM gets 80%+'}
                   {type === 'benchmark' && title.includes('SWE Bench') && 'LLM Top Sscore'}
                   {type === 'benchmark' && title.includes('Last Exam') && 'LLM > Human'}
-                  {type === 'prize' && title.includes('Millennium') && 'Chance of solving a million-dollar math problem'}
-                  {type === 'prize' && title.includes('Arc AGI') && 'Probability of meeting AGI criteria by 2025'}
-                  {type === 'prize' && title.includes('Turing Test') && 'Odds of passing rigorous human-indistinguishability test'}
-                  {type === 'misuse' && title.includes('Hacking') && 'Probability of AI independently compromising systems'}
+                  {type === 'prize' && title.includes('Millennium') && 'Chance of solving a million-dollar math problem by June 2025'}
+                  {type === 'prize' && title.includes('Arc AGI') && 'Probability of claiming Arc-AGI prize by end of 2025'}
+                  {type === 'prize' && title.includes('Turing Test') && 'Probability of passing this variation of the Turing Test by 2029'}
+                  {type === 'misuse' && title.includes('Hacking') && 'Probability of AI independently compromising systems by end of 2025'}
                   {type === '2028-forecast' && title.includes('Romantic') && 'At least 1/1000 Americans talks weekly with one'}
                   {type === '2028-forecast' && title.includes('Blackmail') && 'Risk of AI being used for automated blackmail'}
                   {type === '2028-forecast' && title.includes('Economic') && 'Break in trend for GDP growth, GDP per capita, productivity, or unemployment'}
@@ -881,7 +881,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     },
     'benchmark': {
       label: 'Benchmarks',
-      description: 'How smart will the LLMs be?'
+      description: 'How smart will the LLMs be by the end of this year?'
     },
     'prize': {
       label: 'Prizes',
@@ -893,7 +893,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     },
     '2028-forecast': {
       label: 'Predictions for 2028',
-      description: 'What happens by 2028'
+      description: 'What happens by 2028?'
     }
   }
 
@@ -984,6 +984,13 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             >
               When will we achieve artificial general intelligence?
             </Link>
+          </Row>
+          
+          <Row className="mt-4 justify-between flex-wrap md:flex-nowrap">
+            <Col className="w-full gap-3">
+              <div className="text-left mb-2">
+                <p className="text-lg">
+                  The market expects AGI by{' '}
                   <span className="font-semibold">{expectedYear.getFullYear()}</span>
                   {' '}. What do you think?
                 </p>
