@@ -378,7 +378,7 @@ function getCardBgColor(className: string) {
     default:
       // If we don't know the type from className, use the card type patterns
       if (className.includes('prize')) {
-        return 'bg-amber-50 dark:bg-amber-800/20';
+        return 'bg-amber-50 dark:bg-amber-800/30';
       }
       if (className.includes('benchmark')) {
         return 'bg-teal-50 dark:bg-teal-800/38';
