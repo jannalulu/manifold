@@ -733,7 +733,7 @@ function CapabilityCard({
           {displayType === 'binary-odds' ? (
             <div className="flex flex-col justify-between h-full w-full">
               <div className="flex-1 flex items-center justify-center">
-                <div className={`font-medium text-center ${displayValue.length > 5 ? 'text-6xl' : 'text-7xl'}`}>
+                <div className={`font-medium text-center ${displayValue.length > 5 ? 'text-6xl' : 'text-6xl'}`}>
                   <span className={getGradient(type)}>
                     {displayValue}
                   </span>
