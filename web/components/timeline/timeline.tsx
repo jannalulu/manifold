@@ -1,9 +1,5 @@
 import React, { useState } from 'react'
-import { formatPercent } from 'common/util/format'
 import { format as formatDateFn } from 'date-fns'
-import { Row } from 'web/components/layout/row'
-import { Col } from 'web/components/layout/col'
-import Link from 'next/link'
 import { MdChevronRight, MdChevronLeft } from "react-icons/md"
 import { TimelineItem } from './timeline-item'
 
@@ -159,7 +155,7 @@ export const Timeline = ({
 
   return (
     <div className={`${className}`}>
-      <div className="relative mb-8 mt-10">
+      <div className="relative mb-8 mt-16">
         {/* Main container for timeline and item icons */}
         <div className="relative w-full px-8">
           {timelineScrollPosition > 0 && (
@@ -182,15 +178,14 @@ export const Timeline = ({
             </button>
           )}
         
-          {/* Item icons with collision detection */}
-          <div className="absolute left-0 right-0 top-[-60px] w-full h-[60px] overflow-visible">
+          {/* Collision detection for icons*/}
+          <div className="absolute left-0 right-0 top-[-45px] w-full h-[45px] overflow-visible">
             {(() => {
-              // First, get all items that would be visible
+              // Get all visible items
               const visibleItems = sortedItems
                 .map(item => {
                   const position = getTimelinePosition(item.releaseDate)
-                  
-                  // Don't show items that are outside the visible range
+
                   if (position < 0 || position > 100) return null
                   
                   return { item, position, verticalOffset: 0 }
@@ -203,14 +198,14 @@ export const Timeline = ({
                 const current = visibleItems[i]
                 const next = visibleItems[i + 1]
                 
-                // If items are too close (less than 15% apart)
+                // If items are less than 15% apart
                 if (next.position - current.position < 15) {
                   // Alternate vertical positions
                   next.verticalOffset = i % 2 === 0 ? 30 : -30
                 }
               }
               
-              // Now render the items with their adjusted positions
+              // Render the items with adjusted positions
               return visibleItems.map(({ item, position, verticalOffset }) => (
                 <TimelineItem
                   key={`${item.title}-${item.releaseDate.getTime()}`}
@@ -227,7 +222,6 @@ export const Timeline = ({
             {/* Month markers and labels */}
             <div className="absolute left-0 right-0 top-[15px]">
               {monthMarkers.map((date, index) => {
-                // Calculate position with first month at actual position, rest evenly distributed
                 const position = getMonthMarkerPosition(date, index, monthMarkers.length)
                 
                 return (
@@ -251,7 +245,6 @@ export const Timeline = ({
             {/* Tick marks */}
             <div className="absolute left-0 right-0 top-0">
               {monthMarkers.map((date, index) => {
-                // Calculate position with first month at actual position, rest evenly distributed
                 const position = getMonthMarkerPosition(date, index, monthMarkers.length)
                 
                 return (

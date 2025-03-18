@@ -19,11 +19,11 @@ export function TimelineCard({
 }: TimelineCardProps) {
   const cardContent = (
     <>
-      {/* Padding at the top to match the original component with title and description */}
-      <div className="pt-4"></div>
+      {/* Increase top padding */}
+      <div className="pt-8"></div>
 
-      {/* Timeline with padding to ensure items don't overflow the card */}
-      <div className="mb-4 pb-16">
+      {/* Padding for timeline */}
+      <div className="mb-8">
         <Timeline 
           items={items} 
           lineColor={lineColor} 
