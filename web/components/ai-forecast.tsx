@@ -371,29 +371,29 @@ function getCardBgColor(className: string) {
     cardType = 'monthly';
   }
   
-  // Card backgrounds with subtle gradients
+  // Card background colors
   switch(cardType) {
     case 'monthly':
-      return 'bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/25 dark:to-primary-800/30';
+      return 'bg-primary-50 dark:bg-primary-800/20';
     default:
       // If we don't know the type from className, use the card type patterns
       if (className.includes('prize')) {
-        return 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-800/40 dark:to-amber-700/50';
+        return 'bg-amber-50 dark:bg-amber-800/20';
       }
       if (className.includes('benchmark')) {
-        return 'bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/25 dark:to-teal-800/30';
+        return 'bg-teal-50 dark:bg-teal-800/20';
       }
       if (className.includes('releases')) {
-        return 'bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 dark:from-fuchsia-800/40 dark:to-fuchsia-700/50';
+        return 'bg-fuchsia-50 dark:bg-fuchsia-800/20';
       }
       if (className.includes('misuse')) {
-        return 'bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-800/40 dark:to-rose-700/50';
+        return 'bg-rose-50 dark:bg-rose-800/20';
       }
       if (className.includes('2028-forecast')) {
-        return 'bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-800/40 dark:to-cyan-700/50';
+        return 'bg-cyan-50 dark:bg-cyan-800/20';
       }
       // Default background for unknown card types
-      return 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/60 dark:to-gray-600/70';
+      return 'bg-gray-50 dark:bg-gray-700/20';
   }
 }
 
@@ -849,7 +849,6 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     <TimelineCard
       items={timelineItems}
       lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
-      backgroundColor="bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 dark:from-fuchsia-800/40 dark:to-fuchsia-700/50"
     />
   )
 }
