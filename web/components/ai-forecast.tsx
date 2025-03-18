@@ -849,6 +849,7 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
     <TimelineCard
       items={timelineItems}
       lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
+      backgroundColor="bg-fuchsia-50 dark:bg-fuchsia-800/20"
     />
   )
 }
