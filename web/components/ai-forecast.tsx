@@ -984,20 +984,6 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             >
               When will we achieve artificial general intelligence?
             </Link>
-            <div className="p-1 rounded-full hover:bg-primary-50 transition-colors duration-200">
-              <CopyLinkOrShareButton
-                url={`https://${ENV_CONFIG.domain}/${ENDPOINT}`}
-                eventTrackingName="copy ai share link"
-                tooltip="Share"
-              />
-            </div>
-          </Row>
-          
-          <Row className="mt-4 justify-between flex-wrap md:flex-nowrap">
-            <Col className="w-full gap-3">
-              <div className="text-left mb-2">
-                <p className="text-lg">
-                  The market expects AGI by{' '}
                   <span className="font-semibold">{expectedYear.getFullYear()}</span>
                   {' '}. What do you think?
                 </p>
