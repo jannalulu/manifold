@@ -381,18 +381,18 @@ function getCardBgColor(className: string) {
         return 'bg-amber-50 dark:bg-amber-800/20';
       }
       if (className.includes('benchmark')) {
-        return 'bg-teal-50 dark:bg-teal-800/20';
+        return 'bg-teal-50 dark:bg-teal-800/38';
       }
       if (className.includes('releases')) {
-        return 'bg-fuchsia-50 dark:bg-fuchsia-800/20';
+        return 'bg-fuchsia-50 dark:bg-fuchsia-800/30';
       }
       if (className.includes('misuse')) {
-        return 'bg-rose-50 dark:bg-rose-800/20';
+        return 'bg-rose-50 dark:bg-rose-800/30';
       }
       if (className.includes('2028-forecast')) {
-        return 'bg-cyan-50 dark:bg-cyan-800/20';
+        return 'bg-cyan-50 dark:bg-cyan-800/30';
       }
-      // Default background for unknown card types
+      // Default background
       return 'bg-gray-50 dark:bg-gray-700/20';
   }
 }
