@@ -34,11 +34,9 @@ export const Timeline = ({
   // Sort by release date
   const sortedItems = [...items].sort((a, b) => a.releaseDate.getTime() - b.releaseDate.getTime())
   
-  // Timeline range
+  // Timeline range - always start from the first of the current month
   const currentDate = new Date()
-  const startDate = customStartDate || new Date(currentDate)
-  startDate.setMonth(currentDate.getMonth())
-  startDate.setDate(1)
+  const startDate = customStartDate || new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
   
   const endDate = customEndDate || new Date(startDate)
   endDate.setMonth(startDate.getMonth() + 5) // 6 months total
@@ -74,17 +72,20 @@ export const Timeline = ({
   const viewEndDate = new Date(viewStartDate)
   viewEndDate.setMonth(viewStartDate.getMonth() + 5) // 6 months total
   
-  // Generate evenly spaced month markers for the visible timeline
+  // Month markers based on actual date positions
   const generateMonthMarkers = () => {
     const months = []
-    const monthStart = new Date(viewStartDate)
     
+    // Start with the first day of the visible start month
+    const firstMonthStart = new Date(viewStartDate.getFullYear(), viewStartDate.getMonth(), 1)
+    
+    // Add all months that fall within view range
     const lastDate = new Date(viewEndDate)
     
-    // Go to the start of the month for earliest date
-    while (monthStart <= lastDate) {
-      months.push(new Date(monthStart))
-      monthStart.setMonth(monthStart.getMonth() + 1)
+    let currentMonth = new Date(firstMonthStart)
+    while (currentMonth <= lastDate) {
+      months.push(new Date(currentMonth))
+      currentMonth.setMonth(currentMonth.getMonth() + 1)
     }
     
     return months
@@ -124,6 +125,12 @@ export const Timeline = ({
     } else {
       return -1
     }
+  }
+  
+  // Simple function for positioning month markers evenly
+  const getMonthMarkerPosition = (date: Date, index: number, totalMonths: number) => {
+    // Distribute all months evenly from 0% to 100%
+    return (index / (totalMonths - 1)) * 100;
   }
 
   return (
@@ -197,7 +204,8 @@ export const Timeline = ({
             {/* Month markers and labels */}
             <div className="absolute left-0 right-0 top-[15px]">
               {monthMarkers.map((date, index) => {
-                const position = (index / (monthMarkers.length - 1)) * 100
+                // Calculate position with first month at actual position, rest evenly distributed
+                const position = getMonthMarkerPosition(date, index, monthMarkers.length)
                 
                 return (
                   <div 
@@ -220,7 +228,8 @@ export const Timeline = ({
             {/* Tick marks */}
             <div className="absolute left-0 right-0 top-0">
               {monthMarkers.map((date, index) => {
-                const position = (index / (monthMarkers.length - 1)) * 100
+                // Calculate position with first month at actual position, rest evenly distributed
+                const position = getMonthMarkerPosition(date, index, monthMarkers.length)
                 
                 return (
                   <div 
