@@ -795,6 +795,7 @@ function getCompanyLogo(companyName: string): React.ComponentType | null {
       return SiAnthropic
     case 'gemini':
     case 'deepmind':
+    case 'google':
       return SiGooglegemini
     case 'xai':
     case 'grok':
