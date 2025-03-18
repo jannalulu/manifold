@@ -101,7 +101,31 @@ export const Timeline = ({
     // Calculate raw position as percentage
     const position = ((date.getTime() - viewStartDate.getTime()) / timeRange) * 100
     
-    // If on second page, show items not previously shown
+    // Check if this date falls in the last month of our timeline
+    const dateMonth = date.getMonth()
+    const dateYear = date.getFullYear()
+    const lastMonth = viewEndDate.getMonth()
+    const lastYear = viewEndDate.getFullYear()
+    const isInLastMonth = dateMonth === lastMonth && dateYear === lastYear
+    
+    // If this item is in the last month and we're on the first page,
+    // don't show it (it will be shown on the second page)
+    if (isInLastMonth && timelineScrollPosition === 0) {
+      return -1
+    }
+    
+    // Special handling for items that would appear at the beginning of the timeline
+    // If the date is before our viewStartDate but within 14 days, position it at the start
+    if (date.getTime() < viewStartDate.getTime()) {
+      const daysDifference = (viewStartDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+      if (daysDifference <= 14) {
+        // Place it at the very beginning of the timeline
+        return 5;
+      }
+      return -1; // Otherwise don't show it
+    }
+    
+    // If on second page, handle items that should be shown at the beginning
     if (timelineScrollPosition > 0) {
       // Calculate where this date would have been on the previous page
       const prevPageStartDate = new Date(startDate)
@@ -113,17 +137,17 @@ export const Timeline = ({
       const prevPageTimeRange = prevPageEndDate.getTime() - prevPageStartDate.getTime()
       const prevPagePosition = ((date.getTime() - prevPageStartDate.getTime()) / prevPageTimeRange) * 100
       
-      // Move to beginning of page if previously shown
-      if (prevPagePosition > 95 && prevPagePosition <= 100 && position < 0) {
+      // For items that were near the end of the previous page, show them at the beginning of this page
+      if (prevPagePosition > 90 && prevPagePosition <= 100 && position < 0) {
         return 5 // Position at beginning of current page
       }
     }
     
-    // Return position if it's within the visible range (0-100), otherwise return -1
+    // Make sure items near the edges are clamped to reasonable values
     if (position >= 0 && position <= 100) {
-      return position
+      return Math.max(5, Math.min(95, position)); // Clamp between 5% and 95%
     } else {
-      return -1
+      return -1; // Date is outside visible range
     }
   }
   
@@ -166,9 +190,8 @@ export const Timeline = ({
                 .map(item => {
                   const position = getTimelinePosition(item.releaseDate)
                   
-                  // Don't show items that are in the last 5% of any page
-                  const isNearEndOfPage = position > 95 && position <= 100
-                  if (position < 0 || position > 100 || isNearEndOfPage) return null
+                  // Don't show items that are outside the visible range
+                  if (position < 0 || position > 100) return null
                   
                   return { item, position, verticalOffset: 0 }
                 })

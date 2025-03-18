@@ -9,6 +9,9 @@ interface TimelineItemProps {
 }
 
 export const TimelineItem = ({ item, position, verticalOffset }: TimelineItemProps) => {
+  // Ensure the position is within bounds (5-95% of container width)
+  const safePosition = Math.max(5, Math.min(95, position))
+  
   const itemContent = (
     <div className="flex items-center rounded-full py-1 px-2.5 hover:shadow-md transition-all">
       {item.icon && <div className="mr-1.5 text-primary-600 dark:text-primary-500">{item.icon}</div>}
@@ -22,7 +25,7 @@ export const TimelineItem = ({ item, position, verticalOffset }: TimelineItemPro
   )
 
   const itemStyle = {
-    left: `${position}%`,
+    left: `${safePosition}%`,
     transform: `translateX(-50%) translateY(${verticalOffset}px)`,
     transition: 'transform 0.2s ease-out'
   }
