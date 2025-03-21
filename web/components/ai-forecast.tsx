@@ -728,9 +728,6 @@ function CapabilityCard({
               {(type === 'benchmark' || type === 'prize' || type === 'misuse' || type === 'long-term') && (
                 <p className="text-ink-600 text-xs sm:text-sm mt-1 sm:mt-3 text-left w-full px-1">
                   {type === 'benchmark' && title.includes('IMO Gold') && 'An LLM gets a IMO gold medal'}
-                  {type === 'benchmark' && title.includes('Frontier Math') && 'Expected score on frontier math problems'}
-                  {type === 'benchmark' && title.includes('SWE Bench') && 'Expected top score on software engineering benchmark'}
-                  {type === 'benchmark' && title.includes('Last Exam') && 'Expected highest score on humanity\'s hardest test'}
                   {type === 'prize' && title.includes('Millennium') && 'Chance of solving a million-dollar math problem by June 2025'}
                   {type === 'prize' && title.includes('Arc AGI') && 'Probability of claiming Arc-AGI prize by end of 2025'}
                   {type === 'prize' && title.includes('Turing Test') && 'Probability of passing this variation of the Turing Test by 2029'}
@@ -744,12 +741,22 @@ function CapabilityCard({
               )}
             </div>
           ) : displayType === 'date-numeric' || displayType === 'numeric' ? (
-            <div className="h-full flex-1 flex items-center justify-center">
-              <div className={`font-medium text-center ${displayValue.length > 5 ? 'text-3xl sm:text-4xl' : displayValue.length > 3 ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'}`}>
-                <span className={getGradient(type)}>
-                  {displayValue}
-                </span>
+            <div className="flex flex-col justify-between h-full w-full">
+              <div className="flex-1 flex items-center justify-center">
+                <div className={`font-medium text-center ${displayValue.length > 5 ? 'text-5xl sm:text-6xl' : 'text-5xl sm:text-6xl'}`}>
+                  <span className={getGradient(type)}>
+                    {displayValue}
+                  </span>
+                </div>
               </div>
+              {/* Brief descriptive text for numeric markets */}
+              {displayType === 'numeric' && (
+                <p className="text-ink-600 text-xs sm:text-sm mt-1 sm:mt-3 text-left w-full px-1">
+                  {type === 'benchmark' && title.includes('SWE Bench') && 'Predicted top score EOY'}
+                  {type === 'benchmark' && title.includes('Frontier Math') && 'Predicted top score EOY'}
+                  {type === 'benchmark' && title.includes('Last Exam') && 'Predicted top score EOY'}
+                </p>
+              )}
             </div>
           ) : (
             <div className="h-full flex-1 flex items-center justify-center">
