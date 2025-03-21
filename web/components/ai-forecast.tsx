@@ -105,9 +105,9 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'GPT-5',
     description: 'GPT-5 model released by EOY',
-    marketId: 'XAsltiEcvy7KwJveXQ42',
+    marketId: 'c29Q6uhyhp',
     type: 'releases',
-    displayType: 'top-one-mcq'
+    displayType: 'date-numeric'
   },
   {
     title: 'Claude 3.7 Opus',
@@ -156,16 +156,16 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'SWE Bench Top Score',
     description: 'Top SWE Bench score by EOY',
-    marketId: 'placeholder-2',
+    marketId: 'nEhgsIE6U0',
     type: 'benchmark',
-    displayType: 'binary-odds'
+    displayType: 'numeric'
   },
   {
     title: 'Highest Humanity\'s Last Exam Top Score',
     description:'Highest score on Humanity\'s last exam by EOY',
     marketId: 'tzsZCn85RQ',
     type: 'benchmark',
-    displayType: 'binary-odds'
+    displayType: 'numeric'
   },
   {
     title: 'CodeForces Top Score',
@@ -177,9 +177,9 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     {
     title: 'Frontier Math Top Score',
     description: 'top performance on frontier math',
-    marketId: 'Uu5q0usuQg',
+    marketId: 'LNdOg08SsU',
     type: 'benchmark',
-    displayType: 'top-one-mcq'
+    displayType: 'numeric'
   },
   
   // Prizes
