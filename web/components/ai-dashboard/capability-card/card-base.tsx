@@ -1,7 +1,7 @@
 import React from 'react'
 import { ClickFrame } from 'web/components/widgets/click-frame'
-import { Tooltip } from './tooltip'
-import { getCardBgColor, getTooltipDescription, AIModelIcon } from './utils'
+import { Tooltip } from '../common/tooltip'
+import { getCardBgColor, getTooltipDescription, AIModelIcon } from '../common/ai-utils'
 import { Contract, contractPath } from 'common/contract'
 
 // Base card component with shared styling

@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { BinaryContract, CPMMNumericContract, Contract, contractPath } from 'common/contract'
+import React from 'react'
+import { CPMMNumericContract, Contract, contractPath } from 'common/contract'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { useLiveContract } from 'web/hooks/use-contract'
@@ -8,11 +8,11 @@ import { Clock } from 'web/components/clock/clock'
 import { NumericBetPanel } from 'web/components/answers/numeric-bet-panel'
 import Link from 'next/link'
 import { LuLink } from 'react-icons/lu'
-import { CapabilityCard } from './capability-card'
-import { ModelReleasesTimeline } from './model-releases-timeline'
+import { CapabilityCard } from './capability-card/capability-card'
+import { ModelTimeline } from './model-timeline/model-timeline'
 import { AI_CAPABILITY_CARDS } from './constants'
-import { CARD_BG_PATTERN, getAccentColor } from './utils'
-import { CardBase } from './card-components'
+import { CARD_BG_PATTERN, getAccentColor } from './common/ai-utils'
+import { CardBase } from './capability-card/card-base'
 
 export interface AIForecastProps {
   whenAgi: CPMMNumericContract | null
@@ -99,7 +99,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
           
           {type === 'releases' ? (
             // Display releases on a timeline
-            <ModelReleasesTimeline 
+            <ModelTimeline 
               cards={capabilityCardsByType[type] || []}
               contracts={contracts}
             />

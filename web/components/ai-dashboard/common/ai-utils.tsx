@@ -131,7 +131,7 @@ export function AIModelIcon({ title, className = "h-5 w-5" }: { title: string, c
 // Get company logo component based on company name
 export function getCompanyLogo(companyName: string): React.ComponentType | null {
   // Strip any trailing whitespace or periods that might be in the company name
-  const normalizedName = companyName.trim().replace(/\.$/, '')
+  const normalizedName = companyName.trim().replace(/\.$/,'')
   
   switch (normalizedName.toLowerCase()) {
     case 'openai':

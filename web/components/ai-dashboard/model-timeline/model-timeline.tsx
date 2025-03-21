@@ -1,16 +1,16 @@
 import React, { useMemo } from 'react'
 import { Contract, contractPath } from 'common/contract'
-import { AICapabilityCard } from './constants'
+import { AICapabilityCard } from '../constants'
 import { TimelineCard, TimelineItemData } from 'web/components/timeline'
-import { AIModelIcon, getEstimatedReleaseDate } from './utils'
+import { AIModelIcon, getEstimatedReleaseDate } from '../common/ai-utils'
 
 // Timeline component for model releases
-interface ModelReleasesTimelineProps {
+interface ModelTimelineProps {
   cards: AICapabilityCard[]
   contracts: Contract[]
 }
 
-export function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps) {
+export function ModelTimeline({ cards, contracts }: ModelTimelineProps) {
   // Prepare timeline items with release dates and model info
   const timelineItems = useMemo(() => {
     return cards.map((card, index) => {

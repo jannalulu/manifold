@@ -5,8 +5,8 @@ import { useLiveContract } from 'web/hooks/use-contract'
 import { getNumberExpectedValue } from 'common/src/number'
 import { formatPercent } from 'common/util/format'
 import { getDisplayProbability } from 'common/calculate'
-import { CardBase, CardTitle, createContractClickHandler } from './card-components'
-import { getGradient, getCompanyLogo } from './utils'
+import { CardBase, CardTitle, createContractClickHandler } from './card-base'
+import { getGradient, getCompanyLogo } from '../common/ai-utils'
 
 // Capability Card Component for the static cards with market data
 export function CapabilityCard({ 
