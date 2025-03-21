@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react'
-import { BinaryContract, CPMMNumericContract, Contract, contractPath } from 'common/contract'
+import { BinaryContract, CPMMNumericContract, Contract, contractPath, MultiNumericContract } from 'common/contract'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { useLiveContract } from 'web/hooks/use-contract'
 import { getNumberExpectedValue } from 'common/src/number'
+import { getExpectedValue, formatExpectedValue } from 'common/src/multi-numeric'
 import { Clock } from 'web/components/clock/clock'
 import { TimelineCard, TimelineItemData } from 'web/components/timeline'
 import { NumericBetPanel } from 'web/components/answers/numeric-bet-panel'
@@ -81,7 +82,7 @@ export type AICapabilityCard = {
   description: string
   marketId: string
   type: string
-  displayType?: 'top-two-mcq' | 'top-one-mcq' | 'binary-odds' | 'date-numeric'
+  displayType?: 'top-two-mcq' | 'top-one-mcq' | 'binary-odds' | 'date-numeric' | 'numeric'
 }
 
 export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
@@ -423,7 +424,7 @@ function CapabilityCard({
   title: string
   marketId: string
   type: string
-  displayType?: 'top-two-mcq' | 'top-one-mcq' | 'binary-odds' | 'date-numeric' | undefined
+  displayType?: 'top-two-mcq' | 'top-one-mcq' | 'binary-odds' | 'date-numeric' | 'numeric' | undefined
   contracts: Contract[]
   className?: string
 }) {
@@ -436,6 +437,11 @@ function CapabilityCard({
   // Get the expected value if it's a numeric contract
   const numericValue = liveContract && liveContract.outcomeType === 'NUMBER' 
     ? getNumberExpectedValue(liveContract as CPMMNumericContract) 
+    : null
+    
+  // Get the expected value if it's a multi-numeric contract
+  const multiNumericValue = liveContract && liveContract.outcomeType === 'MULTI_NUMERIC' && liveContract.mechanism === 'cpmm-multi-1'
+    ? getExpectedValue(liveContract as unknown as MultiNumericContract)
     : null
   
   // Get top two companies and their probabilities for "top-two-mcq" display type
@@ -502,21 +508,29 @@ function CapabilityCard({
   let topModel = { text: '—', probability: 0 }
   
   if (displayType === 'top-two-mcq' && liveContract && liveContract.outcomeType === 'MULTIPLE_CHOICE') {
-  topCompanies = getTopTwoOdds()
-} else if (displayType === 'top-one-mcq') {
-  topModel = getTopOneOdds()
-} else if (displayType === 'binary-odds') {
-  if (liveContract && liveContract.outcomeType === 'BINARY') {
-    const prob = liveContract.prob !== undefined 
-      ? liveContract.prob 
-      : getDisplayProbability(liveContract as BinaryContract)
-    displayValue = formatPercent(prob)
-  } 
-} else {
-  // Default fallback
-  displayValue = numericValue !== null 
-    ? numericValue.toFixed(1)
-    : formatPercent(0.25)
+    topCompanies = getTopTwoOdds()
+  } else if (displayType === 'top-one-mcq') {
+    topModel = getTopOneOdds()
+  } else if (displayType === 'binary-odds') {
+    if (liveContract && liveContract.outcomeType === 'BINARY') {
+      const prob = liveContract.prob !== undefined 
+        ? liveContract.prob 
+        : getDisplayProbability(liveContract as BinaryContract)
+      displayValue = formatPercent(prob)
+    } 
+  } else if (displayType === 'numeric' && liveContract) {
+    if (multiNumericValue !== null && liveContract.mechanism === 'cpmm-multi-1') {
+      // For multi-numeric contracts
+      displayValue = formatExpectedValue(multiNumericValue, liveContract as unknown as MultiNumericContract)
+    } else if (numericValue !== null) {
+      // For regular numeric contracts
+      displayValue = numericValue.toFixed(1)
+    }
+  } else {
+    // Default fallback for date-numeric and others
+    displayValue = numericValue !== null 
+      ? numericValue.toFixed(1)
+      : formatPercent(0.25)
   }
   
   // Create click handler for the card
@@ -714,9 +728,9 @@ function CapabilityCard({
               {(type === 'benchmark' || type === 'prize' || type === 'misuse' || type === 'long-term') && (
                 <p className="text-ink-600 text-xs sm:text-sm mt-1 sm:mt-3 text-left w-full px-1">
                   {type === 'benchmark' && title.includes('IMO Gold') && 'An LLM gets a IMO gold medal'}
-                  {type === 'benchmark' && title.includes('Frontier Math') && 'An LLM gets 80%+'}
-                  {type === 'benchmark' && title.includes('SWE Bench') && 'LLM Top Score'}
-                  {type === 'benchmark' && title.includes('Last Exam') && 'LLM > Human'}
+                  {type === 'benchmark' && title.includes('Frontier Math') && 'Expected score on frontier math problems'}
+                  {type === 'benchmark' && title.includes('SWE Bench') && 'Expected top score on software engineering benchmark'}
+                  {type === 'benchmark' && title.includes('Last Exam') && 'Expected highest score on humanity\'s hardest test'}
                   {type === 'prize' && title.includes('Millennium') && 'Chance of solving a million-dollar math problem by June 2025'}
                   {type === 'prize' && title.includes('Arc AGI') && 'Probability of claiming Arc-AGI prize by end of 2025'}
                   {type === 'prize' && title.includes('Turing Test') && 'Probability of passing this variation of the Turing Test by 2029'}
@@ -729,7 +743,7 @@ function CapabilityCard({
                 </p>
               )}
             </div>
-          ) : displayType === 'date-numeric' ? (
+          ) : displayType === 'date-numeric' || displayType === 'numeric' ? (
             <div className="h-full flex-1 flex items-center justify-center">
               <div className={`font-medium text-center ${displayValue.length > 5 ? 'text-3xl sm:text-4xl' : displayValue.length > 3 ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'}`}>
                 <span className={getGradient(type)}>
