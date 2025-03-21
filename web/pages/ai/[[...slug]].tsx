@@ -3,7 +3,8 @@ import { SEO } from 'web/components/SEO'
 import { db } from 'web/lib/supabase/db'
 import { getContract, getContracts } from 'common/supabase/contracts'
 import { CPMMNumericContract, Contract } from 'common/contract'
-import { AIForecast, AI_CAPABILITY_CARDS } from 'web/components/ai-forecast'
+import { AIForecast } from 'web/components/ai-dashboard/ai-forecast'
+import { AI_CAPABILITY_CARDS } from 'web/components/ai-dashboard/constants'
 
 const ENDPOINT = 'ai'
 
