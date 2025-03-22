@@ -69,10 +69,13 @@ export const Timeline = ({
   
   const allMonthMarkers = generateMonthMarkers()
   
-  // Split the months into two rows
-  const halfPoint = Math.floor(allMonthMarkers.length / 2)
-  const firstHalfMonths = allMonthMarkers.slice(0, halfPoint)
-  const secondHalfMonths = allMonthMarkers.slice(halfPoint)
+  // First row: first 6 months
+  const firstHalfMonths = allMonthMarkers.slice(0, 6)
+  
+  // Second row: next 6 months
+  const secondRowStartIndex = Math.min(6, allMonthMarkers.length)
+  const secondRowEndIndex = Math.min(12, allMonthMarkers.length)
+  const secondHalfMonths = allMonthMarkers.slice(secondRowStartIndex, secondRowEndIndex)
   
   // Calculate timeline position for an item (0-100%) for first row
   const getFirstRowPosition = (date: Date) => {
@@ -236,11 +239,13 @@ export const Timeline = ({
       />
       
       {/* Second row */}
-      <TimelineRow 
-        monthMarkers={secondHalfMonths}
-        getItemPosition={getSecondRowPosition}
-        itemsToShow={secondRowItems}
-      />
+      {secondHalfMonths.length > 0 && (
+        <TimelineRow 
+          monthMarkers={secondHalfMonths}
+          getItemPosition={getSecondRowPosition}
+          itemsToShow={secondRowItems}
+        />
+      )}
     </div>
   )
 }
