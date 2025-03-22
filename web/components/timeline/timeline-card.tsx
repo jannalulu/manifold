@@ -26,13 +26,13 @@ export function TimelineCard({
         <Timeline 
           items={items} 
           lineColor={lineColor} 
-          className="px-4 sm:px-6 py-2"
+          className="px-0 sm:px-6 py-2"
         />
       </div>
     </>
   )
 
-  const cardClassName = `group rounded-lg p-4 border border-ink-200 dark:border-ink-300
+  const cardClassName = `group rounded-lg p-2 sm:p-4 border border-ink-200 dark:border-ink-300
     transition-all hover:shadow-md shadow-[2px_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.15)] 
     relative overflow-hidden ${backgroundColor} ${className}`
 
