@@ -129,7 +129,7 @@ export const Timeline = ({
     itemsToShow: TimelineItemData[]
   }) => {
     return (
-      <div className="relative mb-24">
+      <div className="relative mb-32">
         {/* Container for timeline and item icons */}
         <div className="relative w-full px-8">
           {/* Items on the timeline */}
