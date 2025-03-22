@@ -132,11 +132,11 @@ export const Timeline = ({
     itemsToShow: TimelineItemData[]
   }) => {
     return (
-      <div className="relative mb-32">
+      <div className="relative mb-24 sm:mb-32">
         {/* Container for timeline and item icons */}
         <div className="relative w-full px-8">
           {/* Items on the timeline */}
-          <div className="absolute left-0 right-0 top-[-40px] w-full h-[40px] overflow-visible">
+          <div className="absolute left-0 right-0 top-[-30px] sm:top-[-40px] w-full h-[30px] sm:h-[40px] overflow-visible">
             {(() => {
               // Get all visible items for this row
               const visibleItems = itemsToShow
