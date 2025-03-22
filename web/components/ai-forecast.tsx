@@ -110,34 +110,7 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     type: 'releases',
     displayType: 'date'
   },
-  {
-    title: 'Claude 3.7 Opus',
-    description: '',
-    marketId: 'REZNpc8dQO',
-    type: 'releases',
-    displayType: 'date',
-  },
-  {
-    title: 'Grok 4',
-    description: '',
-    marketId: 'QUyRsPRhgd',
-    type: 'releases',
-    displayType: 'date'
-  },
-  {
-    title: 'Deepseek R2',
-    description: '',
-    marketId: 'hZ8ytzn9gh',
-    type: 'releases',
-    displayType: 'date'
-  },
-  {
-    title: 'Deepseek V4',
-    description: '',
-    marketId: 'yLnQQZsc2E',
-    type: 'releases',
-    displayType: 'date'
-  },
+  // add claude 3.7 opus, grok 4, deepseek r2, deepseek v4
 
   // Benchmarks
   {
