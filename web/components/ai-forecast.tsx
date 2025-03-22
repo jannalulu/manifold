@@ -115,35 +115,28 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     description: '',
     marketId: 'REZNpc8dQO',
     type: 'releases',
-    displayType: 'top-one-mcq',
-  },
-  {
-    title: 'Gemini 3',
-    description: '',
-    marketId: 'placeholder-3',
-    type: 'releases',
-    displayType: 'date'
+    displayType: 'date',
   },
   {
     title: 'Grok 4',
     description: '',
     marketId: 'QUyRsPRhgd',
     type: 'releases',
-    displayType: 'top-one-mcq'
+    displayType: 'date'
   },
   {
     title: 'Deepseek R2',
     description: '',
     marketId: 'hZ8ytzn9gh',
     type: 'releases',
-    displayType: 'top-one-mcq'
+    displayType: 'date'
   },
   {
     title: 'Deepseek V4',
     description: '',
     marketId: 'yLnQQZsc2E',
     type: 'releases',
-    displayType: 'top-one-mcq'
+    displayType: 'date'
   },
 
   // Benchmarks
@@ -829,16 +822,8 @@ function getEstimatedReleaseDate(contract: Contract | null, title: string, index
     }
   }
   
-  // Fallback to hardcoded dates if we can't get the real date
-  if (title.includes('GPT-5')) return new Date(2025, 5, 15)         // June 15, 2025
-  if (title.includes('Claude 3.7')) return new Date(2025, 8, 8)      // August 1, 2025
-  if (title.includes('Gemini 3')) return new Date(2025, 4, 1)        // May 1, 2025
-  if (title.includes('Grok 4')) return new Date(2025, 10, 10)        // November 10, 2025
-  if (title.includes('Deepseek R2')) return new Date(2025, 6, 5)     // July 5, 2025
-  if (title.includes('Deepseek V4')) return new Date(2026, 0, 15)    // January 15, 2026
-  
-  // Default fallback with evenly spaced dates
-  return new Date(2025, 3 + (index % 10), 15)
+  // Single fallback date if we can't get the real date from the contract
+  return new Date(2026, 0, 15) // January 15, 2026
 }
 
 // Timeline component for model releases
