@@ -97,7 +97,7 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   {
     title: 'AiderBench',
     description: 'Highest ranked model on Aider',
-    marketId: 'LsZPyLPI82', // Top April LMSYS
+    marketId: 'QuqA2uAALL',
     type: 'monthly',
     displayType: 'top-one-mcq',
   },
@@ -873,7 +873,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
   
   const typeInfo = { // controls sorting
     'monthly': {
-      label: 'Best Model in March',
+      label: 'Best Model in April',
       description: 'What\'s the best model this month?'
     },
     'releases': {
