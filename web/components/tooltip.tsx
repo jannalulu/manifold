@@ -10,182 +10,153 @@ interface TooltipProps {
 
 function Tooltip({ title, description, preferredPlacement = 'top' }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const [placement, setPlacement] = useState(preferredPlacement)
-  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [tooltipStyles, setTooltipStyles] = useState({
+    top: 0,
+    left: 0
+  })
+  const [arrowStyles, setArrowStyles] = useState({})
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
-  
-  // Handle positioning and visibility
+
+  // Calculate position whenever visibility changes
   useEffect(() => {
-    if (!isVisible || !triggerRef.current || !tooltipRef.current) return
-    
-    const triggerRect = triggerRef.current.getBoundingClientRect()
-    const tooltipRect = tooltipRef.current.getBoundingClientRect()
+    if (!isVisible || !buttonRef.current) return
+
+    const buttonRect = buttonRef.current.getBoundingClientRect()
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-    
-    // Calculate available space in each direction
-    const spaceAbove = triggerRect.top
-    const spaceBelow = viewportHeight - triggerRect.bottom
-    const spaceLeft = triggerRect.left
-    const spaceRight = viewportWidth - triggerRect.right
-    
-    // Determine best placement based on available space
-    let bestPlacement = preferredPlacement
-    
-    // For top/bottom placement, check if enough width
-    if (preferredPlacement === 'top' || preferredPlacement === 'bottom') {
-      const needWidth = tooltipRect.width
-      const centerX = triggerRect.left + triggerRect.width / 2
-      const wouldOverflowLeft = centerX - (needWidth / 2) < 0
-      const wouldOverflowRight = centerX + (needWidth / 2) > viewportWidth
-      
-      if (wouldOverflowLeft || wouldOverflowRight) {
-        // Try left or right instead
-        bestPlacement = spaceRight > spaceLeft ? 'right' : 'left'
+
+    // Get tooltip dimensions
+    const tooltipWidth = tooltipRef.current?.offsetWidth || 250
+    const tooltipHeight = tooltipRef.current?.offsetHeight || 100
+
+    // Initial positioning based on preferred placement
+    let top = 0
+    let left = 0
+    let arrowStyle = {}
+
+    switch (preferredPlacement) {
+      case 'top':
+        top = buttonRect.top - tooltipHeight - 10
+        left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
+        arrowStyle = { 
+          bottom: -5, 
+          left: '50%', 
+          transform: 'translateX(-50%) rotate(45deg)'
+        }
+        break
+
+      case 'bottom':
+        top = buttonRect.bottom + 10
+        left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
+        arrowStyle = { 
+          top: -5, 
+          left: '50%', 
+          transform: 'translateX(-50%) rotate(45deg)'
+        }
+        break
+
+      case 'left':
+        top = buttonRect.top + buttonRect.height / 2 - tooltipHeight / 2
+        left = buttonRect.left - tooltipWidth - 10
+        arrowStyle = { 
+          right: -5, 
+          top: '50%', 
+          transform: 'translateY(-50%) rotate(45deg)'
+        }
+        break
+
+      case 'right':
+        top = buttonRect.top + buttonRect.height / 2 - tooltipHeight / 2
+        left = buttonRect.right + 10
+        arrowStyle = { 
+          left: -5, 
+          top: '50%', 
+          transform: 'translateY(-50%) rotate(45deg)'
+        }
+        break
+
+      default:
+        top = buttonRect.top - tooltipHeight - 10
+        left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
+        arrowStyle = { 
+          bottom: -5, 
+          left: '50%', 
+          transform: 'translateX(-50%) rotate(45deg)'
+        }
+    }
+
+    // Adjust if tooltip would overflow viewport
+    if (left < 10) {
+      // Adjust position of arrow when alignment is adjusted
+      if (preferredPlacement === 'top' || preferredPlacement === 'bottom') {
+        left = 10
+        arrowStyle = {
+          ...arrowStyle,
+          left: buttonRect.left + buttonRect.width / 2 - left
+        }
+      } else {
+        left = 10
       }
-      
-      // Then check height for top/bottom
-      if (bestPlacement === 'top' && tooltipRect.height > spaceAbove) {
-        bestPlacement = 'bottom'
-      } else if (bestPlacement === 'bottom' && tooltipRect.height > spaceBelow) {
-        bestPlacement = 'top'
+    } else if (left + tooltipWidth > viewportWidth - 10) {
+      // Adjust position of arrow when alignment is adjusted
+      if (preferredPlacement === 'top' || preferredPlacement === 'bottom') {
+        left = viewportWidth - tooltipWidth - 10
+        arrowStyle = {
+          ...arrowStyle,
+          left: buttonRect.left + buttonRect.width / 2 - left
+        }
+      } else {
+        left = viewportWidth - tooltipWidth - 10
       }
     }
-    
-    // For left/right placement, check if enough height
-    if (preferredPlacement === 'left' || preferredPlacement === 'right') {
-      const needHeight = tooltipRect.height
-      const centerY = triggerRect.top + triggerRect.height / 2
-      const wouldOverflowTop = centerY - (needHeight / 2) < 0
-      const wouldOverflowBottom = centerY + (needHeight / 2) > viewportHeight
-      
-      if (wouldOverflowTop || wouldOverflowBottom) {
-        // Try top or bottom instead
-        bestPlacement = spaceBelow > spaceAbove ? 'bottom' : 'top'
+
+    if (top < 10) {
+      if (preferredPlacement === 'left' || preferredPlacement === 'right') {
+        top = 10
+        arrowStyle = {
+          ...arrowStyle,
+          top: buttonRect.top + buttonRect.height / 2 - top
+        }
+      } else {
+        top = 10
       }
-      
-      // Then check width for left/right
-      if (bestPlacement === 'left' && tooltipRect.width > spaceLeft) {
-        bestPlacement = 'right'
-      } else if (bestPlacement === 'right' && tooltipRect.width > spaceRight) {
-        bestPlacement = 'left'
+    } else if (top + tooltipHeight > viewportHeight - 10) {
+      if (preferredPlacement === 'left' || preferredPlacement === 'right') {
+        top = viewportHeight - tooltipHeight - 10
+        arrowStyle = {
+          ...arrowStyle,
+          top: buttonRect.top + buttonRect.height / 2 - top
+        }
+      } else {
+        top = viewportHeight - tooltipHeight - 10
       }
     }
-    
-    setPlacement(bestPlacement)
+
+    // Handle scroll by hiding tooltip
+    const handleScroll = () => {
+      if (isVisible) {
+        setIsVisible(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    setTooltipStyles({ top, left })
+    setArrowStyles(arrowStyle)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [isVisible, preferredPlacement])
 
-  // Helper functions for fixed positioning
-  const getTop = () => {
-    if (!triggerRef.current) return 0
-    const rect = triggerRef.current.getBoundingClientRect()
-    
-    switch(placement) {
-      case 'top':
-        return rect.top - 8
-      case 'bottom':
-        return rect.bottom + 8
-      case 'left':
-      case 'right':
-        return rect.top + (rect.height / 2)
-      default:
-        return rect.top
-    }
-  }
-  
-  const getLeft = () => {
-    if (!triggerRef.current) return 0
-    const rect = triggerRef.current.getBoundingClientRect()
-    
-    switch(placement) {
-      case 'left':
-        return rect.left - 8
-      case 'right':
-        return rect.right + 8
-      case 'top':
-      case 'bottom':
-        return rect.left + (rect.width / 2)
-      default:
-        return rect.left
-    }
-  }
-  
-  const getTransform = () => {
-    switch(placement) {
-      case 'top':
-        return 'translate(-50%, -100%)'
-      case 'bottom':
-        return 'translate(-50%, 0)'
-      case 'left':
-        return 'translate(-100%, -50%)'
-      case 'right':
-        return 'translate(0, -50%)'
-      default:
-        return 'translate(0, 0)'
-    }
-  }
-
-  // Get arrow styles based on placement
-  const getArrowStyles = () => {
-    const baseStyles = {
-      position: 'absolute',
-      width: '8px',
-      height: '8px',
-      background: 'white',
-      transform: 'rotate(45deg)'
-    } as React.CSSProperties
-    
-    switch (placement) {
-      case 'top':
-        return {
-          ...baseStyles,
-          bottom: '-4px',
-          left: '50%',
-          marginLeft: '-4px',
-          borderTop: 'none',
-          borderLeft: 'none',
-        }
-      case 'bottom':
-        return {
-          ...baseStyles,
-          top: '-4px',
-          left: '50%',
-          marginLeft: '-4px',
-          borderBottom: 'none',
-          borderRight: 'none',
-        }
-      case 'left':
-        return {
-          ...baseStyles,
-          right: '-4px',
-          top: '50%',
-          marginTop: '-4px',
-          borderLeft: 'none',
-          borderBottom: 'none',
-        }
-      case 'right':
-        return {
-          ...baseStyles,
-          left: '-4px',
-          top: '50%',
-          marginTop: '-4px',
-          borderRight: 'none',
-          borderTop: 'none',
-        }
-      default:
-        return baseStyles
-    }
-  }
-
   return (
-    <div className="inline-flex items-center relative">
+    <>
       <button
-        ref={triggerRef}
+        ref={buttonRef}
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
         onClick={() => setIsVisible(!isVisible)}
-        onFocus={() => setIsVisible(true)}
-        onBlur={() => setIsVisible(false)}
         className="text-ink-500 hover:text-primary-600 transition-colors focus:outline-none"
         aria-label={`Info about ${title}`}
         aria-expanded={isVisible}
@@ -196,23 +167,31 @@ function Tooltip({ title, description, preferredPlacement = 'top' }: TooltipProp
       {isVisible && typeof document !== 'undefined' && createPortal(
         <div
           ref={tooltipRef}
-          role="tooltip"
           style={{
-            position: 'fixed', // Ensure above all cards
-            zIndex: 50,
-            transform: getTransform(),
-            top: getTop(),
-            left: getLeft(),
+            position: 'fixed',
+            zIndex: 9999,
+            top: tooltipStyles.top,
+            left: tooltipStyles.left,
+            pointerEvents: 'none'
           }}
           className="w-64 max-w-xs bg-canvas-0 shadow-lg rounded-md border border-ink-200 p-3 text-sm text-ink-700"
+          role="tooltip"
         >
-          <div style={getArrowStyles()} aria-hidden="true" />
+          <div
+            style={{
+              position: 'absolute',
+              width: 10,
+              height: 10,
+              backgroundColor: 'white',
+              ...arrowStyles
+            }}
+          />
           <h4 className="font-medium mb-1">{title}</h4>
           <p>{description}</p>
         </div>,
         document.body
       )}
-    </div>
+    </>
   )
 }
 
