@@ -18,7 +18,7 @@ import { LuLink } from 'react-icons/lu'
 import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
 import { LiaKiwiBirdSolid } from "react-icons/lia"
-import TooltipComponent from 'web/components/tooltip'
+import TooltipComponent from 'web/components/widgets/tooltip'
 import { SizedBinaryChart } from 'web/components/charts/contract/binary'
 import { getBetPoints } from 'common/bets'
 
