@@ -250,15 +250,13 @@ function CardBase({
 // Component for card title with tooltip for benchmarks and prizes
 function CardTitle({ 
   title,
-  showModelIcon = false,
-  showTooltip = false
+  showModelIcon = false
 }: { 
   title: string, 
   type: string, 
-  showModelIcon?: boolean,
-  showTooltip?: boolean 
+  showModelIcon?: boolean
 }) {
-  const tooltipDescription = showTooltip ? getTooltipDescription(title) : null;
+  const tooltipDescription = getTooltipDescription(title);
   
   return (
     <div className="relative w-full mb-1">
@@ -271,7 +269,7 @@ function CardTitle({
         <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-lg">{title}</h3>
       </div>
       
-      {showTooltip && tooltipDescription && (
+      {tooltipDescription && (
         <div className="absolute top-0 sm:top-1 right-0">
           <TooltipComponent title={title} description={tooltipDescription} preferredPlacement="top" />
         </div>
@@ -517,8 +515,7 @@ function CapabilityCard({
             <CardTitle 
               title={title} 
               type={type} 
-              showModelIcon={type === 'releases'} 
-              showTooltip={type === 'benchmark' || type === 'prize' || type === 'misuse'}
+              showModelIcon={type === 'releases'}
             />
           </div>
           
@@ -613,7 +610,6 @@ function CapabilityCard({
                 title={title} 
                 type={type} 
                 showModelIcon
-                showTooltip
               />
             </div>
             
@@ -656,8 +652,7 @@ function CapabilityCard({
             <CardTitle 
               title={title} 
               type={type} 
-              showModelIcon={type === 'releases'} 
-              showTooltip={type === 'benchmark' || type === 'prize' || type === 'misuse'}
+              showModelIcon={type === 'releases'}
             />
           </div>
           
@@ -689,8 +684,7 @@ function CapabilityCard({
           <CardTitle 
             title={title} 
             type={type} 
-            showModelIcon={type === 'releases'} 
-            showTooltip={type === 'benchmark' || type === 'prize' || type === 'misuse'}
+            showModelIcon={type === 'releases'}
           />
         </div>
         
