@@ -19,7 +19,7 @@ import { ReactNode, useRef, useState, useEffect } from 'react'
 
 // See https://floating-ui.com/docs/react-dom
 
-export function Tooltip(props: {
+type TooltipProps = {
   text: string | false | undefined | null | ReactNode
   children: ReactNode
   className?: string
@@ -30,21 +30,21 @@ export function Tooltip(props: {
   hasSafePolygon?: boolean
   suppressHydrationWarning?: boolean
   autoHideDuration?: number
-}) {
-  const {
-    text,
-    children,
-    className,
-    tooltipClassName,
-    noTap,
-    noFade,
-    hasSafePolygon,
-    suppressHydrationWarning,
-    autoHideDuration,
-  } = props
+}
 
+export function Tooltip({
+  text,
+  children,
+  className,
+  tooltipClassName,
+  placement = 'top',
+  noTap,
+  noFade,
+  hasSafePolygon,
+  suppressHydrationWarning,
+  autoHideDuration,
+}: TooltipProps) {
   const arrowRef = useRef(null)
-
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -56,12 +56,12 @@ export function Tooltip(props: {
     }
   }, [open, autoHideDuration, text])
 
-  const { refs, floatingStyles, middlewareData, context, placement } =
+  const { refs, floatingStyles, middlewareData, context, placement: actualPlacement } =
     useFloating({
-      open: open,
+      open,
       onOpenChange: setOpen,
       whileElementsMounted: autoUpdate,
-      placement: props.placement ?? 'top',
+      placement,
       middleware: [
         offset(8),
         flip(),
@@ -79,15 +79,18 @@ export function Tooltip(props: {
     }),
     useRole(context, { role: 'label' }),
   ])
+  
   // which side of tooltip arrow is on. like: if tooltip is top-left, arrow is on bottom of tooltip
   const arrowSide = {
     top: 'bottom',
     right: 'left',
     bottom: 'top',
     left: 'right',
-  }[placement.split('-')[0]] as string
+  }[actualPlacement.split('-')[0]] as string
 
-  return text ? (
+  if (!text) return <>{children}</>
+
+  return (
     <>
       <span
         suppressHydrationWarning={suppressHydrationWarning}
@@ -97,7 +100,6 @@ export function Tooltip(props: {
       >
         {children}
       </span>
-      {/* conditionally render tooltip and fade in/out */}
       <Transition
         show={open}
         enter="transition-opacity ease-out duration-50"
@@ -106,7 +108,6 @@ export function Tooltip(props: {
         leave={noFade ? '' : 'transition-opacity ease-in duration-150'}
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        // div attributes
         as="div"
         role="tooltip"
         ref={refs.setFloating}
@@ -132,154 +133,149 @@ export function Tooltip(props: {
         />
       </Transition>
     </>
-  ) : (
-    <>{children}</>
   )
 }
 
-interface TooltipProps {
+interface DashboardTooltipProps {
   title: string
   description: string
   preferredPlacement?: 'top' | 'right' | 'bottom' | 'left'
 }
 
-function DashboardTooltip({ title, description, preferredPlacement = 'top' }: TooltipProps) {
+function DashboardTooltip({ 
+  title, 
+  description, 
+  preferredPlacement = 'top' 
+}: DashboardTooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const [tooltipStyles, setTooltipStyles] = useState({
-    top: 0,
-    left: 0
-  })
+  const [tooltipStyles, setTooltipStyles] = useState({ top: 0, left: 0 })
   const [arrowStyles, setArrowStyles] = useState({})
   const buttonRef = useRef<HTMLButtonElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
+
+  const toggleVisibility = () => setIsVisible(!isVisible)
+  const show = () => setIsVisible(true)
+  const hide = () => setIsVisible(false)
 
   // Calculate position whenever visibility changes
   useEffect(() => {
     if (!isVisible || !buttonRef.current) return
 
-    const buttonRect = buttonRef.current.getBoundingClientRect()
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    // Get tooltip dimensions
-    const tooltipWidth = tooltipRef.current?.offsetWidth || 250
-    const tooltipHeight = tooltipRef.current?.offsetHeight || 100
-
-    // Initial positioning based on preferred placement
-    let top = 0
-    let left = 0
-    let arrowStyle = {}
-
-    switch (preferredPlacement) {
-      case 'top':
-        top = buttonRect.top - tooltipHeight - 10
-        left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
-        arrowStyle = { 
-          bottom: -5, 
-          left: '50%', 
-          transform: 'translateX(-50%) rotate(45deg)'
+    const calculatePosition = () => {
+      const buttonRect = buttonRef.current!.getBoundingClientRect()
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+      
+      const tooltipWidth = tooltipRef.current?.offsetWidth || 250
+      const tooltipHeight = tooltipRef.current?.offsetHeight || 100
+      
+      // Initial positioning based on preferred placement
+      let top = 0
+      let left = 0
+      let arrowStyle = {}
+      
+      const positionByPlacement = {
+        top: () => {
+          top = buttonRect.top - tooltipHeight - 10
+          left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
+          arrowStyle = { 
+            bottom: -5, 
+            left: '50%', 
+            transform: 'translateX(-50%) rotate(45deg)'
+          }
+        },
+        bottom: () => {
+          top = buttonRect.bottom + 10
+          left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
+          arrowStyle = { 
+            top: -5, 
+            left: '50%', 
+            transform: 'translateX(-50%) rotate(45deg)'
+          }
+        },
+        left: () => {
+          top = buttonRect.top + buttonRect.height / 2 - tooltipHeight / 2
+          left = buttonRect.left - tooltipWidth - 10
+          arrowStyle = { 
+            right: -5, 
+            top: '50%', 
+            transform: 'translateY(-50%) rotate(45deg)'
+          }
+        },
+        right: () => {
+          top = buttonRect.top + buttonRect.height / 2 - tooltipHeight / 2
+          left = buttonRect.right + 10
+          arrowStyle = { 
+            left: -5, 
+            top: '50%', 
+            transform: 'translateY(-50%) rotate(45deg)'
+          }
         }
-        break
-
-      case 'bottom':
-        top = buttonRect.bottom + 10
-        left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
-        arrowStyle = { 
-          top: -5, 
-          left: '50%', 
-          transform: 'translateX(-50%) rotate(45deg)'
-        }
-        break
-
-      case 'left':
-        top = buttonRect.top + buttonRect.height / 2 - tooltipHeight / 2
-        left = buttonRect.left - tooltipWidth - 10
-        arrowStyle = { 
-          right: -5, 
-          top: '50%', 
-          transform: 'translateY(-50%) rotate(45deg)'
-        }
-        break
-
-      case 'right':
-        top = buttonRect.top + buttonRect.height / 2 - tooltipHeight / 2
-        left = buttonRect.right + 10
-        arrowStyle = { 
-          left: -5, 
-          top: '50%', 
-          transform: 'translateY(-50%) rotate(45deg)'
-        }
-        break
-
-      default:
-        top = buttonRect.top - tooltipHeight - 10
-        left = buttonRect.left + buttonRect.width / 2 - tooltipWidth / 2
-        arrowStyle = { 
-          bottom: -5, 
-          left: '50%', 
-          transform: 'translateX(-50%) rotate(45deg)'
-        }
-    }
-
-    // Adjust if tooltip would overflow viewport
-    if (left < 10) {
-      // Adjust position of arrow when alignment is adjusted
-      if (preferredPlacement === 'top' || preferredPlacement === 'bottom') {
+      }
+      
+      // Position based on preferred placement or default to top
+      const placementFn = positionByPlacement[preferredPlacement] || positionByPlacement.top
+      placementFn()
+      
+      // Adjust horizontal position if needed
+      if (left < 10) {
+        const isVertical = preferredPlacement === 'top' || preferredPlacement === 'bottom'
         left = 10
-        arrowStyle = {
-          ...arrowStyle,
-          left: buttonRect.left + buttonRect.width / 2 - left
+        
+        if (isVertical) {
+          arrowStyle = {
+            ...arrowStyle,
+            left: buttonRect.left + buttonRect.width / 2 - left
+          }
         }
-      } else {
-        left = 10
-      }
-    } else if (left + tooltipWidth > viewportWidth - 10) {
-      // Adjust position of arrow when alignment is adjusted
-      if (preferredPlacement === 'top' || preferredPlacement === 'bottom') {
+      } else if (left + tooltipWidth > viewportWidth - 10) {
+        const isVertical = preferredPlacement === 'top' || preferredPlacement === 'bottom'
         left = viewportWidth - tooltipWidth - 10
-        arrowStyle = {
-          ...arrowStyle,
-          left: buttonRect.left + buttonRect.width / 2 - left
+        
+        if (isVertical) {
+          arrowStyle = {
+            ...arrowStyle,
+            left: buttonRect.left + buttonRect.width / 2 - left
+          }
         }
-      } else {
-        left = viewportWidth - tooltipWidth - 10
       }
+      
+      // Adjust vertical position if needed
+      if (top < 10) {
+        const isHorizontal = preferredPlacement === 'left' || preferredPlacement === 'right'
+        top = 10
+        
+        if (isHorizontal) {
+          arrowStyle = {
+            ...arrowStyle,
+            top: buttonRect.top + buttonRect.height / 2 - top
+          }
+        }
+      } else if (top + tooltipHeight > viewportHeight - 10) {
+        const isHorizontal = preferredPlacement === 'left' || preferredPlacement === 'right'
+        top = viewportHeight - tooltipHeight - 10
+        
+        if (isHorizontal) {
+          arrowStyle = {
+            ...arrowStyle,
+            top: buttonRect.top + buttonRect.height / 2 - top
+          }
+        }
+      }
+      
+      setTooltipStyles({ top, left })
+      setArrowStyles(arrowStyle)
     }
 
-    if (top < 10) {
-      if (preferredPlacement === 'left' || preferredPlacement === 'right') {
-        top = 10
-        arrowStyle = {
-          ...arrowStyle,
-          top: buttonRect.top + buttonRect.height / 2 - top
-        }
-      } else {
-        top = 10
-      }
-    } else if (top + tooltipHeight > viewportHeight - 10) {
-      if (preferredPlacement === 'left' || preferredPlacement === 'right') {
-        top = viewportHeight - tooltipHeight - 10
-        arrowStyle = {
-          ...arrowStyle,
-          top: buttonRect.top + buttonRect.height / 2 - top
-        }
-      } else {
-        top = viewportHeight - tooltipHeight - 10
-      }
-    }
-
-    // Handle scroll by hiding tooltip
+    calculatePosition()
+    
+    // Hide tooltip on scroll
     const handleScroll = () => {
-      if (isVisible) {
-        setIsVisible(false)
-      }
+      if (isVisible) hide()
     }
-
+    
     window.addEventListener('scroll', handleScroll, { passive: true })
-
-    setTooltipStyles({ top, left })
-    setArrowStyles(arrowStyle)
-
+    
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
@@ -289,9 +285,9 @@ function DashboardTooltip({ title, description, preferredPlacement = 'top' }: To
     <>
       <button
         ref={buttonRef}
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        onClick={() => setIsVisible(!isVisible)}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onClick={toggleVisibility}
         className="text-ink-500 hover:text-primary-600 transition-colors focus:outline-none"
         aria-label={`Info about ${title}`}
         aria-expanded={isVisible}
