@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { BinaryContract, CPMMNumericContract, Contract, contractPath, MultiNumericContract } from 'common/contract'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
@@ -19,6 +19,8 @@ import { GiSpermWhale } from "react-icons/gi"
 import { PiBirdBold } from "react-icons/pi"
 import { LiaKiwiBirdSolid } from "react-icons/lia"
 import TooltipComponent from 'web/components/tooltip'
+import { SizedBinaryChart } from 'web/components/charts/contract/binary'
+import { getBetPoints } from 'common/bets'
 
 // Shared background pattern for all cards
 const BG_PATTERN_LIGHT = "bg-[url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")]"
@@ -50,6 +52,9 @@ function getTooltipDescription(cardTitle: string): string {
   // Default description if no match is found
   return `Please Google for more information about "${cardTitle}" benchmark.`
 }
+
+// Define section type for the dashboard
+export type SectionType = 'monthly' | 'releases' | 'benchmark' | 'featured-graph' | 'prize' | 'misuse' | 'long-term'
 
 // Define type for capability cards
 export type AICapabilityCard = {
@@ -86,6 +91,15 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
     displayType: 'date'
   },
   // add claude 3.7 opus, grok 4, deepseek r2, deepseek v4
+
+  // Featured Graph
+  {
+    title: 'IMO Gold',
+    description: 'AI gets gold on IMO by EOY',
+    marketId: 'BcJbQTDX1rdmaLYGKUOz',
+    type: 'featured-graph',
+    displayType: 'binary-odds'
+  },
 
   // Benchmarks
   {
@@ -280,6 +294,7 @@ function getAccentColor(type: string) {
     case 'monthly': return 'text-primary-600 dark:text-primary-500'
     case 'releases': return 'text-fuchsia-700 dark:text-fuchsia-500'
     case 'benchmark': return 'text-teal-700 dark:text-teal-500'
+    case 'featured-graph': return 'text-indigo-700 dark:text-indigo-500'
     case 'prize': return 'text-amber-700 dark:text-amber-500'
     case 'misuse': return 'text-rose-700 dark:text-rose-500'
     case 'long-term': return 'text-sky-700 dark:text-sky-500'
@@ -296,6 +311,8 @@ function getGradient(type: string, isText = true) {
       return `${textPrefix}bg-gradient-to-r from-fuchsia-500 via-fuchsia-600 to-fuchsia-700 dark:from-fuchsia-400 dark:via-fuchsia-500 dark:to-fuchsia-600`
     case 'benchmark':
       return `${textPrefix}bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 dark:from-teal-400 dark:via-teal-500 dark:to-teal-600`
+    case 'featured-graph':
+      return `${textPrefix}bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 dark:from-indigo-400 dark:via-indigo-500 dark:to-indigo-600`
     case 'prize':
       return `${textPrefix}bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 dark:from-amber-400 dark:via-amber-500 dark:to-amber-600`
     case 'misuse':
@@ -329,6 +346,9 @@ function getCardBgColor(className: string) {
       }
       if (className.includes('releases')) {
         return 'bg-fuchsia-50 dark:bg-fuchsia-800/30'
+      }
+      if (className.includes('featured-graph')) {
+        return 'bg-indigo-50 dark:bg-indigo-800/30'
       }
       if (className.includes('misuse')) {
         return 'bg-rose-50 dark:bg-rose-800/30'
@@ -780,7 +800,7 @@ function getEstimatedReleaseDate(contract: Contract | null, title: string, index
     }
   }
   
-  // Single fallback date if we can't get the real date from the contract
+  // Fallback date if missing data
   return new Date(2026, 0, 15) // January 15, 2026
 }
 
@@ -831,12 +851,88 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
   )
 }
 
+// Props for the featured graph section
+export interface FeaturedGraphProps {
+  contract: BinaryContract | null
+  cardTitle?: string
+  cardDescription?: string
+}
+
+// Component to display a featured market graph
+function FeaturedMarketGraph({ contract, cardTitle, cardDescription }: FeaturedGraphProps) {
+  const [points, setPoints] = useState<{ x: number; y: number }[] | null>(null)
+  
+  useEffect(() => {
+    if (contract) {
+      // Get data points for the chart
+      getBetPoints(contract.id, {
+        limit: 1000,
+        filterRedemptions: true,
+      }).then((fetchedPoints) => {
+        if (fetchedPoints?.length > 0) {
+          setPoints(fetchedPoints)
+        }
+      })
+    }
+  }, [contract?.id])
+
+  if (!contract) {
+    return <div className="text-ink-500 text-center py-8">No featured market selected</div>
+  }
+  
+  return (
+    <div className="w-full">
+      <div className="mb-4">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          {contract.question}
+        </h3>
+        <p className="text-ink-600 mt-1">
+          {cardDescription || ''}
+        </p>
+      </div>
+      
+      {points ? (
+        <div className="border border-ink-200 dark:border-ink-300 rounded-lg p-4 bg-white dark:bg-ink-900">
+          <SizedBinaryChart
+            betPoints={points}
+            contract={contract}
+            className="w-full"
+            zoomY
+            showZoomer
+            showAnnotations
+            size="md"
+          />
+          
+          <div className="mt-4 flex justify-between items-center">
+            <div className="text-ink-600">
+              Current probability: <span className="font-semibold">{formatPercent(contract.prob ?? 0.5)}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="h-[250px] flex items-center justify-center bg-ink-100/50 dark:bg-ink-700/20 rounded-lg">
+          <div className="animate-pulse text-ink-500">Loading chart data...</div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastProps) {
   const liveWhenAgi = whenAgi && whenAgi.id ? useLiveContract(whenAgi) : null
   const expectedValueAGI = liveWhenAgi ? getNumberExpectedValue(liveWhenAgi) : 2030
   const eventYear = Math.floor(expectedValueAGI)
   const eventMonth = Math.round((expectedValueAGI - eventYear) * 12)
   const expectedYear = new Date(eventYear, eventMonth, 1)
+  
+  // Display featured graph
+  const featuredContract = useMemo(() => {
+    const featuredCard = AI_CAPABILITY_CARDS.find(card => card.type === 'featured-graph')
+    if (featuredCard) {
+      return contracts.find(c => c.id === featuredCard.marketId) as BinaryContract || null
+    }
+    return null
+  }, [contracts])
   
   const capabilityCardsByType = AI_CAPABILITY_CARDS.reduce((grouped, card) => {
     if (!grouped[card.type]) {
@@ -846,7 +942,16 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     return grouped
   }, {} as Record<string, typeof AI_CAPABILITY_CARDS>)
   
-  const typeInfo = { // controls sorting
+  // Define section type to make TypeScript happy
+  type SectionType = 'monthly' | 'releases' | 'benchmark' | 'featured-graph' | 'prize' | 'misuse' | 'long-term'
+  
+  interface SectionInfo {
+    label: string
+    description: string
+  }
+  
+  // Define the type information and order of sections
+  const typeInfo: Record<SectionType, SectionInfo> = { // controls sorting
     'monthly': {
       label: 'Best Model in April',
       description: 'What\'s the best model this month?'
@@ -858,6 +963,10 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     'benchmark': {
       label: 'Benchmarks',
       description: 'How smart will the LLMs be by the end of this year?'
+    },
+    'featured-graph': {
+      label: 'Featured Graph',
+      description: 'Trend changes in whether AI would win the IMO'
     },
     'prize': {
       label: 'Prizes',
@@ -872,6 +981,17 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       description: 'What happens in the long-run?'
     }
   }
+  
+  // Define the order of sections to ensure proper rendering
+  const orderedSections: SectionType[] = [
+    'monthly',
+    'releases',
+    'benchmark',
+    'featured-graph',
+    'prize',
+    'misuse',
+    'long-term'
+  ]
 
   return (
     <Col className="mb-8 gap-4 px-1 sm:gap-6 sm:px-2">
@@ -885,23 +1005,23 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       </Col>
       
       {/* Card Categories */}
-      {Object.entries(typeInfo).map(([type, info], index) => (
+      {orderedSections.map((type, index) => (
         <Col key={type} className={`${index > 0 ? 'mt-12 pt-8 border-t border-ink-200 dark:border-ink-800/50' : 'mt-6'}`} id={type}>
           <div className="mb-3">
             <Row className="items-center justify-between">
               <div>
                 <h3 className={`items-center gap-1 font-semibold text-xl ${getAccentColor(type)}`}>
-                  {info.label}
+                  {typeInfo[type].label}
                 </h3>
                 <p className="text-ink-500 text-sm mt-1">
-                  {info.description}
+                  {typeInfo[type].description}
                 </p>
               </div>
               <Link 
                 href={`#${type}`} 
                 className="flex items-center justify-center p-2 text-primary-500 hover:text-primary-700 hover:bg-primary-50 rounded-full transition-all duration-200"
                 scroll={false}
-                aria-label={`Link to ${info.label} section`}
+                aria-label={`Link to ${typeInfo[type].label} section`}
               >
                 <LuLink size={18} />
               </Link>
@@ -914,6 +1034,9 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
               cards={capabilityCardsByType[type] || []}
               contracts={contracts}
             />
+          ) : type === 'featured-graph' ? (
+            // Display the featured market graph
+            <FeaturedMarketGraph contract={featuredContract} />
           ) : (
             // Display other card types in a grid
             <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative rounded-lg ${CARD_BG_PATTERN}`}>
