@@ -888,7 +888,7 @@ function FeaturedMarketGraph({ contract }: FeaturedGraphProps) {
   return (
     <CardBase
       onClick={clickHandler}
-      className="fade-in group relative w-full bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-ink-200 dark:border-ink-300"
+      className="fade-in group relative w-full rounded-lg"
       minHeight=""
     >
       <div className="w-full mb-4">
