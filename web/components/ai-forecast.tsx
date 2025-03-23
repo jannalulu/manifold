@@ -880,41 +880,53 @@ function FeaturedMarketGraph({ contract, cardTitle, cardDescription }: FeaturedG
     return <div className="text-ink-500 text-center py-8">No featured market selected</div>
   }
   
+  // Handle click to navigate to contract page
+  const handleClick = () => {
+    if (contract) {
+      window.location.href = contractPath(contract)
+    }
+  }
+  
   return (
-    <div className="w-full">
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          {contract.question}
-        </h3>
-        <p className="text-ink-600 mt-1">
-          {cardDescription || ''}
-        </p>
-      </div>
-      
-      {points ? (
-        <div className="border border-ink-200 dark:border-ink-300 rounded-lg p-4 bg-white dark:bg-ink-900">
-          <SizedBinaryChart
-            betPoints={points}
-            contract={contract}
-            className="w-full"
-            zoomY
-            showZoomer
-            showAnnotations
-            size="md"
-          />
-          
-          <div className="mt-4 flex justify-between items-center">
-            <div className="text-ink-600">
-              Current probability: <span className="font-semibold">{formatPercent(contract.prob ?? 0.5)}</span>
+    <CardBase
+      onClick={handleClick}
+      className="fade-in group relative mx-auto bg-indigo-50 dark:bg-indigo-900/20"
+      minHeight=""
+    >
+      <div className="w-full">
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold text-indigo-700 dark:text-indigo-500">
+            {contract.question}
+          </h3>
+          <p className="text-ink-600 mt-1">
+            {cardDescription || ''}
+          </p>
+        </div>
+        
+        {points ? (
+          <div className="mt-4">
+            <SizedBinaryChart
+              betPoints={points}
+              contract={contract}
+              className="w-full"
+              zoomY
+              size="md" 
+              color="#6366f1" // Indigo-500 color for the graph - this property will be passed to BinaryContractChart
+            />
+            
+            <div className="mt-4 flex justify-between items-center">
+              <div className="text-ink-600">
+                Current probability: <span className="font-semibold">{formatPercent(contract.prob ?? 0.5)}</span>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="h-[250px] flex items-center justify-center bg-ink-100/50 dark:bg-ink-700/20 rounded-lg">
-          <div className="animate-pulse text-ink-500">Loading chart data...</div>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="h-[250px] flex items-center justify-center bg-indigo-100/50 dark:bg-indigo-800/20 rounded-lg">
+            <div className="animate-pulse text-ink-500">Loading chart data...</div>
+          </div>
+        )}
+      </div>
+    </CardBase>
   )
 }
 
@@ -1036,7 +1048,9 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
             />
           ) : type === 'featured-graph' ? (
             // Display the featured market graph
-            <FeaturedMarketGraph contract={featuredContract} />
+            <FeaturedMarketGraph 
+              contract={featuredContract}
+            />
           ) : (
             // Display other card types in a grid
             <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2 relative rounded-lg ${CARD_BG_PATTERN}`}>
