@@ -266,7 +266,7 @@ function CardTitle({
             <AIModelIcon title={title} />
           </div>
         )}
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-lg pr-6 leading-tight">{title}</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-med sm:text-lg pr-2 leading-tight">{title}</h3>
       </div>
       
       {tooltipDescription && (
