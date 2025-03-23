@@ -854,12 +854,10 @@ function ModelReleasesTimeline({ cards, contracts }: ModelReleasesTimelineProps)
 // Props for the featured graph section
 export interface FeaturedGraphProps {
   contract: BinaryContract | null
-  cardTitle?: string
-  cardDescription?: string
 }
 
 // Component to display a featured market graph
-function FeaturedMarketGraph({ contract, cardTitle, cardDescription }: FeaturedGraphProps) {
+function FeaturedMarketGraph({ contract }: FeaturedGraphProps) {
   const [points, setPoints] = useState<{ x: number; y: number }[] | null>(null)
   
   useEffect(() => {
@@ -880,27 +878,24 @@ function FeaturedMarketGraph({ contract, cardTitle, cardDescription }: FeaturedG
     return <div className="text-ink-500 text-center py-8">No featured market selected</div>
   }
   
-  // Handle click to navigate to contract page
-  const handleClick = () => {
+  const clickHandler = () => {
     if (contract) {
-      window.location.href = contractPath(contract)
+      const path = contractPath(contract)
+      window.open(path, '_blank')
     }
   }
   
   return (
     <CardBase
-      onClick={handleClick}
-      className="fade-in group relative mx-auto bg-indigo-50 dark:bg-indigo-900/20"
+      onClick={clickHandler}
+      className="fade-in group relative w-full bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-ink-200 dark:border-ink-300"
       minHeight=""
     >
-      <div className="w-full">
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold text-indigo-700 dark:text-indigo-500">
-            {contract.question}
-          </h3>
-          <p className="text-ink-600 mt-1">
-            {cardDescription || ''}
-          </p>
+      <div className="w-full mb-4">
+        <div className="mt-4 flex justify-between items-center">
+          <div className="text-ink-600">
+            Current probability: <span className="font-semibold">{formatPercent(contract.prob ?? 0.5)}</span>
+          </div>
         </div>
         
         {points ? (
@@ -910,15 +905,8 @@ function FeaturedMarketGraph({ contract, cardTitle, cardDescription }: FeaturedG
               contract={contract}
               className="w-full"
               zoomY
-              size="md" 
-              color="#6366f1" // Indigo-500 color for the graph - this property will be passed to BinaryContractChart
+              size="md"
             />
-            
-            <div className="mt-4 flex justify-between items-center">
-              <div className="text-ink-600">
-                Current probability: <span className="font-semibold">{formatPercent(contract.prob ?? 0.5)}</span>
-              </div>
-            </div>
           </div>
         ) : (
           <div className="h-[250px] flex items-center justify-center bg-indigo-100/50 dark:bg-indigo-800/20 rounded-lg">
@@ -977,7 +965,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       description: 'How smart will the LLMs be by the end of this year?'
     },
     'featured-graph': {
-      label: 'Featured Graph',
+      label: featuredContract?.question || 'Featured Graph',
       description: 'Trend changes in whether AI would win the IMO'
     },
     'prize': {
@@ -1090,7 +1078,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
       {liveWhenAgi && (
         <div className="mt-12 pt-8 border-t border-ink-200 dark:border-ink-800/50">
           <CardBase
-            onClick={() => window.location.href = contractPath(liveWhenAgi)}
+            onClick={() => window.open(contractPath(liveWhenAgi), '_blank')}
             className="fade-in group relative mx-auto"
             minHeight=""
         >
