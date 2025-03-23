@@ -40,7 +40,7 @@ function getTooltipDescription(cardTitle: string): string | null {
     'Arc AGI': 'Anthropic\'s Rubric for AI Capability Evaluation - a comprehensive benchmark designed to evaluate artificial general intelligence capabilities.',
     'Turing Test': 'Each of the three human judges will conduct two hour long text-based interviews with each of the four candidates. The computer would have passed the Turing test if it fooled two of the three judges.',
     'CodeForces': 'CodeForces is a competitive programming platform with challenging algorithmic problems that test reasoning, efficiency, and mathematical thinking.',
-    'ASL-3': 'Anthropic Semantic Language 3 is a language model developed by Anthropic that is designed to understand and generate human language at a high level of proficiency.'
+    'ASL-3': 'Defined as systems that substantially increase the risk of catastrophic misuse compared to non-AI baselines (e.g. search engines or textbooks) OR that show low-level autonomous capabilities.'
   }
   
   // Find the first matching key term in the title
@@ -971,7 +971,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     },
     'misuse': {
       label: 'AI Misuse',
-      description: 'How misaligned are these models?'
+      description: 'How safe are these models?'
     },
     'long-term': {
       label: 'Long-term Predictions',
