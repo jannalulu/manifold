@@ -975,7 +975,7 @@ export function AIForecast({ whenAgi, contracts = [], hideTitle }: AIForecastPro
     },
     'long-term': {
       label: 'Long-term Predictions',
-      description: 'What happens in the long-run?'
+      description: 'What happens to AI development in the long-run?'
     }
   }
   
