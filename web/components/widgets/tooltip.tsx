@@ -169,7 +169,33 @@ function DashboardTooltip({
       const tooltipWidth = tooltipRef.current?.offsetWidth || 250
       const tooltipHeight = tooltipRef.current?.offsetHeight || 100
       
-      // Initial positioning based on preferred placement
+      // Calculate available space in each direction
+      const spaceTop = buttonRect.top
+      const spaceBottom = viewportHeight - buttonRect.bottom
+      const spaceLeft = buttonRect.left
+      const spaceRight = viewportWidth - buttonRect.right
+      
+      // Determine actual placement based on available space
+      let actualPlacement = preferredPlacement
+      
+      // If preferred placement is top but not enough space, use bottom
+      if (preferredPlacement === 'top' && spaceTop < tooltipHeight + 10 && spaceBottom >= tooltipHeight + 10) {
+        actualPlacement = 'bottom'
+      }
+      // If preferred placement is bottom but not enough space, use top
+      else if (preferredPlacement === 'bottom' && spaceBottom < tooltipHeight + 10 && spaceTop >= tooltipHeight + 10) {
+        actualPlacement = 'top'
+      }
+      // If preferred placement is left but not enough space, use right
+      else if (preferredPlacement === 'left' && spaceLeft < tooltipWidth + 10 && spaceRight >= tooltipWidth + 10) {
+        actualPlacement = 'right'
+      }
+      // If preferred placement is right but not enough space, use left
+      else if (preferredPlacement === 'right' && spaceRight < tooltipWidth + 10 && spaceLeft >= tooltipWidth + 10) {
+        actualPlacement = 'left'
+      }
+      
+      // Initial positioning based on actual placement
       let top = 0
       let left = 0
       let arrowStyle = {}
@@ -213,13 +239,13 @@ function DashboardTooltip({
         }
       }
       
-      // Position based on preferred placement or default to top
-      const placementFn = positionByPlacement[preferredPlacement] || positionByPlacement.top
+      // Position based on actual placement or default to top
+      const placementFn = positionByPlacement[actualPlacement] || positionByPlacement.top
       placementFn()
       
-      // Adjust horizontal position if needed
+      // Fine-tune horizontal position if needed (without changing the placement)
       if (left < 10) {
-        const isVertical = preferredPlacement === 'top' || preferredPlacement === 'bottom'
+        const isVertical = actualPlacement === 'top' || actualPlacement === 'bottom'
         left = 10
         
         if (isVertical) {
@@ -229,7 +255,7 @@ function DashboardTooltip({
           }
         }
       } else if (left + tooltipWidth > viewportWidth - 10) {
-        const isVertical = preferredPlacement === 'top' || preferredPlacement === 'bottom'
+        const isVertical = actualPlacement === 'top' || actualPlacement === 'bottom'
         left = viewportWidth - tooltipWidth - 10
         
         if (isVertical) {
@@ -240,9 +266,9 @@ function DashboardTooltip({
         }
       }
       
-      // Adjust vertical position if needed
+      // Fine-tune vertical position if needed (without changing the placement)
       if (top < 10) {
-        const isHorizontal = preferredPlacement === 'left' || preferredPlacement === 'right'
+        const isHorizontal = actualPlacement === 'left' || actualPlacement === 'right'
         top = 10
         
         if (isHorizontal) {
@@ -252,7 +278,7 @@ function DashboardTooltip({
           }
         }
       } else if (top + tooltipHeight > viewportHeight - 10) {
-        const isHorizontal = preferredPlacement === 'left' || preferredPlacement === 'right'
+        const isHorizontal = actualPlacement === 'left' || actualPlacement === 'right'
         top = viewportHeight - tooltipHeight - 10
         
         if (isHorizontal) {
