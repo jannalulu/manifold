@@ -892,9 +892,9 @@ function FeaturedMarketGraph({ contract }: FeaturedGraphProps) {
       minHeight=""
     >
       <div className="w-full mb-4">
-        <div className="mt-4 flex justify-between items-center">
-          <div className="text-ink-600">
-            Current probability: <span className="font-semibold">{formatPercent(contract.prob ?? 0.5)}</span>
+        <div className="flex justify-between items-center">
+          <div>
+            <span className="text-sm text-gray-600 dark:text-gray-400"> Probability:</span> <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">{formatPercent(contract.prob ?? 0.5)}</span>
           </div>
         </div>
         
