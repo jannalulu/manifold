@@ -30,7 +30,7 @@ const CARD_BG_PATTERN = `${BG_PATTERN_LIGHT} ${BG_PATTERN_DARK}`
 const ENDPOINT = 'ai'
 
 // Function to get the appropriate description for tooltip based on card title
-function getTooltipDescription(cardTitle: string): string {
+function getTooltipDescription(cardTitle: string): string | null {
   const keyTerms: Record<string, string> = {
     'IMO Gold': 'The International Mathematical Olympiad (IMO) is the world championship mathematics competition for high school students. Getting a gold medal requires a high score on extremely challenging math problems.',
     'Frontier Math': 'Advanced mathematical problems at the cutting edge of research that have traditionally been very difficult for AI systems to solve.',
@@ -39,7 +39,8 @@ function getTooltipDescription(cardTitle: string): string {
     'Millennium Prize': 'The Millennium Prize Problems are seven of the most difficult unsolved problems in mathematics, each with a $1 million prize for solution.',
     'Arc AGI': 'Anthropic\'s Rubric for AI Capability Evaluation - a comprehensive benchmark designed to evaluate artificial general intelligence capabilities.',
     'Turing Test': 'Each of the three human judges will conduct two hour long text-based interviews with each of the four candidates. The computer would have passed the Turing test if it fooled two of the three judges.',
-    'CodeForces': 'CodeForces is a competitive programming platform with challenging algorithmic problems that test reasoning, efficiency, and mathematical thinking.'
+    'CodeForces': 'CodeForces is a competitive programming platform with challenging algorithmic problems that test reasoning, efficiency, and mathematical thinking.',
+    'ASL-3': 'Anthropic Semantic Language 3 is a language model developed by Anthropic that is designed to understand and generate human language at a high level of proficiency.'
   }
   
   // Find the first matching key term in the title
@@ -49,8 +50,8 @@ function getTooltipDescription(cardTitle: string): string {
     }
   }
   
-  // Default description if no match is found
-  return `Please Google for more information about "${cardTitle}" benchmark.`
+  // no tooltip if no match is found
+  return null
 }
 
 // Define section type for the dashboard
@@ -257,6 +258,8 @@ function CardTitle({
   showModelIcon?: boolean,
   showTooltip?: boolean 
 }) {
+  const tooltipDescription = showTooltip ? getTooltipDescription(title) : null;
+  
   return (
     <div className="relative w-full mb-1">
       <div className="flex items-center">
@@ -268,9 +271,9 @@ function CardTitle({
         <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-lg">{title}</h3>
       </div>
       
-      {showTooltip && (
+      {showTooltip && tooltipDescription && (
         <div className="absolute top-0 sm:top-1 right-0">
-          <TooltipComponent title={title} description={getTooltipDescription(title)} preferredPlacement="top" />
+          <TooltipComponent title={title} description={tooltipDescription} preferredPlacement="top" />
         </div>
       )}
     </div>
@@ -515,7 +518,7 @@ function CapabilityCard({
               title={title} 
               type={type} 
               showModelIcon={type === 'releases'} 
-              showTooltip={type === 'benchmark' || type === 'prize'}
+              showTooltip={type === 'benchmark' || type === 'prize' || type === 'misuse'}
             />
           </div>
           
@@ -654,7 +657,7 @@ function CapabilityCard({
               title={title} 
               type={type} 
               showModelIcon={type === 'releases'} 
-              showTooltip={type === 'benchmark' || type === 'prize'}
+              showTooltip={type === 'benchmark' || type === 'prize' || type === 'misuse'}
             />
           </div>
           
@@ -687,7 +690,7 @@ function CapabilityCard({
             title={title} 
             type={type} 
             showModelIcon={type === 'releases'} 
-            showTooltip={type === 'benchmark' || type === 'prize'}
+            showTooltip={type === 'benchmark' || type === 'prize' || type === 'misuse'}
           />
         </div>
         
