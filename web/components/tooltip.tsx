@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { LuInfo } from 'react-icons/lu'
 
 interface TooltipProps {
@@ -74,44 +75,53 @@ function Tooltip({ title, description, preferredPlacement = 'top' }: TooltipProp
     setPlacement(bestPlacement)
   }, [isVisible, preferredPlacement])
 
-  // Get tooltip position styles based on placement
-  const getTooltipStyles = () => {
-    const baseStyles = {
-      position: 'absolute',
-      zIndex: 50,
-    } as React.CSSProperties
+  // Helper functions for fixed positioning
+  const getTop = () => {
+    if (!triggerRef.current) return 0
+    const rect = triggerRef.current.getBoundingClientRect()
     
-    switch (placement) {
+    switch(placement) {
       case 'top':
-        return {
-          ...baseStyles,
-          bottom: '100%',
-          left: '50%',
-          transform: 'translateX(-50%) translateY(-8px)',
-        }
+        return rect.top - 8
       case 'bottom':
-        return {
-          ...baseStyles,
-          top: '100%',
-          left: '50%',
-          transform: 'translateX(-50%) translateY(8px)',
-        }
+        return rect.bottom + 8
       case 'left':
-        return {
-          ...baseStyles,
-          right: '100%',
-          top: '50%',
-          transform: 'translateY(-50%) translateX(-8px)',
-        }
       case 'right':
-        return {
-          ...baseStyles,
-          left: '100%',
-          top: '50%',
-          transform: 'translateY(-50%) translateX(8px)',
-        }
+        return rect.top + (rect.height / 2)
       default:
-        return baseStyles
+        return rect.top
+    }
+  }
+  
+  const getLeft = () => {
+    if (!triggerRef.current) return 0
+    const rect = triggerRef.current.getBoundingClientRect()
+    
+    switch(placement) {
+      case 'left':
+        return rect.left - 8
+      case 'right':
+        return rect.right + 8
+      case 'top':
+      case 'bottom':
+        return rect.left + (rect.width / 2)
+      default:
+        return rect.left
+    }
+  }
+  
+  const getTransform = () => {
+    switch(placement) {
+      case 'top':
+        return 'translate(-50%, -100%)'
+      case 'bottom':
+        return 'translate(-50%, 0)'
+      case 'left':
+        return 'translate(-100%, -50%)'
+      case 'right':
+        return 'translate(0, -50%)'
+      default:
+        return 'translate(0, 0)'
     }
   }
 
@@ -183,17 +193,24 @@ function Tooltip({ title, description, preferredPlacement = 'top' }: TooltipProp
         <LuInfo className="w-[12px] h-[12px] sm:w-[16px] sm:h-[16px]" />
       </button>
       
-      {isVisible && (
+      {isVisible && typeof document !== 'undefined' && createPortal(
         <div
           ref={tooltipRef}
           role="tooltip"
-          style={getTooltipStyles()}
+          style={{
+            position: 'fixed', // Ensure above all cards
+            zIndex: 50,
+            transform: getTransform(),
+            top: getTop(),
+            left: getLeft(),
+          }}
           className="w-64 max-w-xs bg-canvas-0 shadow-lg rounded-md border border-ink-200 p-3 text-sm text-ink-700"
         >
           <div style={getArrowStyles()} aria-hidden="true" />
           <h4 className="font-medium mb-1">{title}</h4>
           <p>{description}</p>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
