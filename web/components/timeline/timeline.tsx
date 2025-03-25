@@ -115,10 +115,19 @@ export const Timeline = ({
     return Math.max(5, Math.min(95, position)) // Clamp between 5% and 95%
   }
   
-  // Simple function for positioning month markers evenly
-  const getMonthMarkerPosition = (index: number, totalMonths: number) => {
-    // Distribute all months evenly from 0% to 100%
-    return (index / (totalMonths - 1)) * 100;
+  // Position month markers
+  const getMonthMarkerPosition = (index: number, months: Date[]) => {
+    if (months.length <= 1) return 0
+    
+    const firstMonth = months[0]
+    const lastMonth = months[months.length - 1]
+    const lastMonthEnd = new Date(lastMonth)
+    lastMonthEnd.setMonth(lastMonthEnd.getMonth() + 1)
+    
+    const totalTimespan = lastMonthEnd.getTime() - firstMonth.getTime()
+    const monthDate = months[index]
+    
+    return ((monthDate.getTime() - firstMonth.getTime()) / totalTimespan) * 100
   }
   
   // Create a timeline row component for reuse
@@ -177,7 +186,7 @@ export const Timeline = ({
             {/* Month markers and labels */}
             <div className="absolute left-0 right-0 top-[15px]">
               {monthMarkers.map((date, index) => {
-                const position = getMonthMarkerPosition(index, monthMarkers.length)
+                const position = getMonthMarkerPosition(index, monthMarkers)
                 
                 return (
                   <div 
@@ -200,7 +209,7 @@ export const Timeline = ({
             {/* Tick marks */}
             <div className="absolute left-0 right-0 top-0">
               {monthMarkers.map((date, index) => {
-                const position = getMonthMarkerPosition(index, monthMarkers.length)
+                const position = getMonthMarkerPosition(index, monthMarkers)
                 
                 return (
                   <div 
