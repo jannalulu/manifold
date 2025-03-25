@@ -132,7 +132,7 @@ export const Timeline = ({
     itemsToShow: TimelineItemData[]
   }) => {
     return (
-      <div className="relative mb-32 sm:mb-40">
+      <div className="relative mb-40 sm:mb-48">
         {/* Container for timeline and item icons */}
         <div className="relative w-full px-8">
           {/* Items on the timeline */}
@@ -153,7 +153,7 @@ export const Timeline = ({
               for (let i = 1; i < visibleItems.length; i++) {
                 const current = visibleItems[i]
                 let hasCollision = false
-                let usedOffsets = new Set()
+                const usedOffsets = new Set()
                 
                 // Check against all previous items
                 for (let j = 0; j < i; j++) {
@@ -171,7 +171,7 @@ export const Timeline = ({
                 if (hasCollision) {
                   // Try each offset level (0, -25, -50, -75) until we find an unused one
                   for (let offsetLevel = 0; offsetLevel <= 4; offsetLevel++) {
-                    const offset = -23 * offsetLevel;
+                    const offset = -25 * offsetLevel;
                     if (!usedOffsets.has(offset)) {
                       current.verticalOffset = offset;
                       break;
