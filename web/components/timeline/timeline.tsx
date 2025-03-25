@@ -115,19 +115,10 @@ export const Timeline = ({
     return Math.max(5, Math.min(95, position)) // Clamp between 5% and 95%
   }
   
-  // Position month markers
+  // Position month markers evenly from 0% to 100%
   const getMonthMarkerPosition = (index: number, months: Date[]) => {
     if (months.length <= 1) return 0
-    
-    const firstMonth = months[0]
-    const lastMonth = months[months.length - 1]
-    const lastMonthEnd = new Date(lastMonth)
-    lastMonthEnd.setMonth(lastMonthEnd.getMonth() + 1)
-    
-    const totalTimespan = lastMonthEnd.getTime() - firstMonth.getTime()
-    const monthDate = months[index]
-    
-    return ((monthDate.getTime() - firstMonth.getTime()) / totalTimespan) * 100
+    return (index / (months.length - 1)) * 100
   }
   
   // Create a timeline row component for reuse
