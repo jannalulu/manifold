@@ -133,6 +133,7 @@ export const Timeline = ({
   }) => {
     return (
       <div className="relative mb-32 sm:mb-40">
+      <div className="relative mb-32 sm:mb-40">
         {/* Container for timeline and item icons */}
         <div className="relative w-full px-8">
           {/* Items on the timeline */}
