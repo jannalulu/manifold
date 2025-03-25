@@ -170,8 +170,8 @@ export const Timeline = ({
                 // If there's a collision, find an available offset level
                 if (hasCollision) {
                   // Try each offset level (0, -25, -50, -75) until we find an unused one
-                  for (let offsetLevel = 0; offsetLevel <= 3; offsetLevel++) {
-                    const offset = -25 * offsetLevel;
+                  for (let offsetLevel = 0; offsetLevel <= 4; offsetLevel++) {
+                    const offset = -23 * offsetLevel;
                     if (!usedOffsets.has(offset)) {
                       current.verticalOffset = offset;
                       break;
