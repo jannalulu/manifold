@@ -21,7 +21,7 @@ export function TimelineCard({
       {/* Title row */}
       <div className="mb-14">
         <div className="flex justify-between">
-          <div className="font-semibold text-gray-700 dark:text-gray-500 sm:text-lg">
+          <div className="font-semibold text-gray-700 dark:text-gray-100 sm:text-lg">
             Release Timelines
           </div>
         </div>
