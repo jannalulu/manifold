@@ -39,6 +39,10 @@ const ENDPOINT = 'ai'
 // Function to get the appropriate description for tooltip based on card title
 function getTooltipDescription(cardTitle: string): string | null {
   const keyTerms: Record<string, string> = {
+    'Aider Bench':
+      "To evaluate an LLM’s editing skill, aider uses benchmarks that assess a model’s ability to consistently follow the system prompt to successfully edit code. The benchmark requires the LLM to edit source files to complete 225 coding exercises in many popular programming languages such as C++, Go, Java, JavaScript, Python and Rust.",
+    'Chatbot Arena':
+      'Chatbot Arena is an open platform for crowdsourced AI benchmarking, where users vote on different model outputs.',
     'IMO Gold':
       'The International Mathematical Olympiad (IMO) is the world championship mathematics competition for high school students. Getting a gold medal requires a high score on extremely challenging math problems.',
     'Frontier Math':
