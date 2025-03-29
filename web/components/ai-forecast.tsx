@@ -39,7 +39,7 @@ const ENDPOINT = 'ai'
 // Function to get the appropriate description for tooltip based on card title
 function getTooltipDescription(cardTitle: string): string | null {
   const keyTerms: Record<string, string> = {
-    'Aider Bench':
+    'AiderBench':
       "To evaluate an LLM’s editing skill, aider uses benchmarks that assess a model’s ability to consistently follow the system prompt to successfully edit code. The benchmark requires the LLM to edit source files to complete 225 coding exercises in many popular programming languages such as C++, Go, Java, JavaScript, Python and Rust.",
     'Chatbot Arena':
       'Chatbot Arena is an open platform for crowdsourced AI benchmarking, where users vote on different model outputs.',
@@ -1081,11 +1081,16 @@ function ModelReleasesTimeline({
   }
 
   return (
-    <TimelineCard
-      items={timelineItems}
-      lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
-      backgroundColor="bg-fuchsia-50 dark:bg-fuchsia-800/20"
-    />
+    <div>
+      <div className="text-fuchsia-700 dark:text-fuchsia-500 mb-2 text-xl font-bold pl-2">
+        Releases
+      </div>
+      <TimelineCard
+        items={timelineItems}
+        lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
+        backgroundColor="bg-fuchsia-50 dark:bg-fuchsia-800/20"
+      />
+    </div>
   )
 }
 
@@ -1133,14 +1138,23 @@ function FeaturedMarketGraph({ contract }: FeaturedGraphProps) {
       className="fade-in group relative w-full rounded-lg"
       minHeight=""
     >
-      <div className="mb-4 w-full">
+      <Row className="justify-between">
+        <Link
+          href={contractPath(contract)}
+          className="hover:text-primary-700 grow items-start font-semibold transition-colors hover:underline sm:text-lg"
+        >
+          {contract.question}
+        </Link>
+      </Row>
+      
+      <div className="mt-4 mb-4 w-full">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-primary-600 dark:text-primary-400">
               {' '}
               Probability:
             </span>{' '}
-            <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+            <span className="text-2xl font-semibold text-primary-700 dark:text-primary-200">
               {formatPercent(contract.prob ?? 0.5)}
             </span>
           </div>
