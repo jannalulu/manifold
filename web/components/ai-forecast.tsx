@@ -1212,7 +1212,7 @@ export function AIForecast({
 
   interface SectionInfo {
     label: string
-    description: string
+    description?: string
   }
 
   // Define the type information and order of sections
@@ -1220,27 +1220,21 @@ export function AIForecast({
     // controls sorting
     monthly: {
       label: 'Best Model in April',
-      description: "What's the best model this month?",
     },
     releases: {
       label: 'Model Releases',
-      description: 'When will [insert lab here] release the next model?',
     },
     benchmark: {
       label: 'Benchmarks',
-      description: 'How smart will the LLMs be by the end of this year?',
     },
     'featured-graph': {
       label: featuredContract?.question || 'Featured Graph',
-      description: 'Trend changes in whether AI would win the IMO',
     },
     prize: {
       label: 'Prizes',
-      description: 'Will any model claim this prize before 2030?',
     },
     misuse: {
       label: 'AI Misuse',
-      description: 'How safe are these models?',
     },
     'long-term': {
       label: 'Long-term Predictions',
@@ -1276,7 +1270,7 @@ export function AIForecast({
           key={type}
           className={`${
             index > 0
-              ? 'border-ink-200 dark:border-ink-800/50 mt-12 border-t pt-8'
+              ? ''
               : 'mt-6'
           }`}
           id={type}
@@ -1354,7 +1348,6 @@ export function AIForecast({
 
       {/* AGI Clock Card */}
       {liveWhenAgi && (
-        <div className="border-ink-200 dark:border-ink-800/50 mt-12 border-t pt-8">
           <CardBase
             onClick={() => window.open(contractPath(liveWhenAgi), '_blank')}
             className="fade-in group relative mx-auto"
@@ -1395,7 +1388,6 @@ export function AIForecast({
               </Col>
             </Row>
           </CardBase>
-        </div>
       )}
     </Col>
   )
