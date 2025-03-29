@@ -20,7 +20,6 @@ import { formatPercent } from 'common/util/format'
 import { getDisplayProbability } from 'common/calculate'
 import { SiOpenai, SiGooglegemini, SiAnthropic } from 'react-icons/si'
 import { RiTwitterXLine } from 'react-icons/ri'
-import { LuLink } from 'react-icons/lu'
 import { GiSpermWhale } from 'react-icons/gi'
 import { PiBirdBold } from 'react-icons/pi'
 import { LiaKiwiBirdSolid } from 'react-icons/lia'
@@ -98,14 +97,14 @@ export type AICapabilityCard = {
 export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   // Monthly markets
   {
-    title: 'LMSYS (April)',
+    title: 'Chatbot Arena — April',
     description: 'Highest ranked model on lmsys',
     marketId: 'LsZPyLPI82',
     type: 'monthly',
     displayType: 'top-two-mcq',
   },
   {
-    title: 'AiderBench (April)',
+    title: 'AiderBench — April',
     description: 'Highest ranked model on Aider',
     marketId: 'QuqA2uAALL',
     type: 'monthly',
@@ -299,6 +298,7 @@ export interface AIForecastProps {
   whenAgi: CPMMNumericContract | null
   contracts: Contract[]
   hideTitle?: boolean
+  hideSectionTitles?: boolean
 }
 
 // Base card component with shared styling
@@ -1168,6 +1168,7 @@ export function AIForecast({
   whenAgi,
   contracts = [],
   hideTitle,
+  hideSectionTitles = true,
 }: AIForecastProps) {
   const liveWhenAgi = whenAgi && whenAgi.id ? useLiveContract(whenAgi) : null
   const expectedValueAGI = liveWhenAgi
@@ -1260,35 +1261,37 @@ export function AIForecast({
   ]
 
   return (
-    <Col className="mb-8 gap-4 px-1 sm:gap-6 sm:px-2">
+    <Col className="mb-8 gap-4 px-1 sm:gap-6 sm:px-4 sm:pt-8">
+      <Col className={hideTitle ? 'hidden' : ''}>
+          <div className="text-primary-700 text-2xl font-normal sm:text-3xl">
+            Manifold AI Dashboard
+          </div>
+      </Col>
 
       {/* Card Categories */}
-      {orderedSections.map((type, index) => (
+      {orderedSections.map((type) => (
         <Col
           key={type}
-          className={`${
-            index > 0
-              ? ''
-              : 'mt-6'
-          }`}
           id={type}
         >
-          <div className="mb-3">
-            <Row className="items-center justify-between">
-              <div>
-                <h3
-                  className={`items-center gap-1 text-2xl font-semibold sm:text-3xl ${getAccentColor(
-                    type
-                  )}`}
-                >
-                  {typeInfo[type].label}
-                </h3>
-                <p className="text-ink-500 mt-1 text-sm">
-                  {typeInfo[type].description}
-                </p>
-              </div>
-            </Row>
-          </div>
+          {!hideSectionTitles && (
+            <div className="mb-3">
+              <Row className="items-center justify-between">
+                <div>
+                  <h3
+                    className={`items-center gap-1 text-2xl font-semibold sm:text-3xl ${getAccentColor(
+                      type
+                    )}`}
+                  >
+                    {typeInfo[type].label}
+                  </h3>
+                  <p className="text-ink-500 mt-1 text-sm">
+                    {typeInfo[type].description}
+                  </p>
+                </div>
+              </Row>
+            </div>
+          )}
 
           {type === 'releases' ? (
             // Display releases on a timeline
