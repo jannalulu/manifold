@@ -1276,7 +1276,7 @@ export function AIForecast({
           key={type}
           className={`${
             index > 0
-              ? 'border-ink-200 dark:border-ink-800/50 mt-12 border-t pt-8'
+              ? ''
               : 'mt-6'
           }`}
           id={type}
@@ -1354,7 +1354,7 @@ export function AIForecast({
 
       {/* AGI Clock Card */}
       {liveWhenAgi && (
-        <div className="border-ink-200 dark:border-ink-800/50 mt-12 border-t pt-8">
+        <div>
           <CardBase
             onClick={() => window.open(contractPath(liveWhenAgi), '_blank')}
             className="fade-in group relative mx-auto"
