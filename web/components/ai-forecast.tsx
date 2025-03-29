@@ -49,8 +49,8 @@ function getTooltipDescription(cardTitle: string): string | null {
       'A collection of extremely difficult problems across various domains, designed to test the limits of AI capabilities compared to human experts.',
     'Millennium Prize':
       'The Millennium Prize Problems are seven of the most difficult unsolved problems in mathematics, each with a $1 million prize for solution.',
-    'Arc AGI':
-      "Anthropic's Rubric for AI Capability Evaluation - a comprehensive benchmark designed to evaluate artificial general intelligence capabilities.",
+    'ARC-AGI':
+      "The Abstract and Reasoning Corpus for Artificial General Intelligence (ARC-AGI) benchmark to measure intelligence, supposedly the only AI benchmark that measures our progress towards general intelligence. A system that scores well on it must adapt to new problems it has not seen before and that its creators (developers) did not anticipate.",
     'Turing Test':
       'Each of the three human judges will conduct two hour long text-based interviews with each of the four candidates. The computer would have passed the Turing test if it fooled two of the three judges.',
     CodeForces:
@@ -180,35 +180,35 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
 
   // Benchmarks
   {
-    title: 'IMO Gold',
+    title: 'IMO Gold 2025',
     description: 'AI gets gold on IMO by EOY',
     marketId: 'tu2ouer9zq',
     type: 'benchmark',
     displayType: 'binary-odds',
   },
   {
-    title: 'SWE Bench',
+    title: 'SWE Bench 2025',
     description: 'Top SWE Bench score by EOY',
     marketId: 'nEhgsIE6U0',
     type: 'benchmark',
     displayType: 'numeric',
   },
   {
-    title: "Humanity's Last Exam",
+    title: "Humanity's Last Exam 2025",
     description: "Highest score on Humanity's last exam by EOY",
     marketId: 'tzsZCn85RQ',
     type: 'benchmark',
     displayType: 'numeric',
   },
   {
-    title: 'CodeForces',
+    title: 'CodeForces 2025',
     description: '>80% on Frontier Math by EOY',
     marketId: 'RSAcZtOZyl',
     type: 'benchmark',
     displayType: 'top-one-mcq',
   },
   {
-    title: 'Frontier Math',
+    title: 'Frontier Math 2025',
     description: 'top performance on frontier math',
     marketId: 'LNdOg08SsU',
     type: 'benchmark',
@@ -217,21 +217,21 @@ export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
 
   // Prizes
   {
-    title: 'Arc AGI',
+    title: 'ARC-AGI by 2030',
     description: 'Arc AGI prize before 2030',
     marketId: 'p0fzp3jqqc',
     type: 'prize',
     displayType: 'binary-odds',
   },
   {
-    title: 'Turing Test (Long Bets)',
+    title: 'Turing Test+ by 2030',
     description: 'Will AI pass long bets Turing Test before 2030?',
     marketId: 'nKyHon3IPOqJYzaWTHJB',
     type: 'prize',
     displayType: 'binary-odds',
   },
   {
-    title: 'Millennium Prize',
+    title: 'Millennium Prize by 2030',
     description: 'AI Solve Millennium Problem before 2030',
     marketId: '6vw71lj8bi',
     type: 'prize',
@@ -881,16 +881,16 @@ function CapabilityCard({
                 <p className="text-ink-600 mt-1 w-full px-1 text-left text-xs sm:mt-3 sm:text-sm">
                   {type === 'benchmark' &&
                     title.includes('IMO Gold') &&
-                    'An LLM gets a IMO gold medal'}
+                    'LLM gets IMO gold medal'}
                   {type === 'prize' &&
                     title.includes('Millennium') &&
                     'Chance of solving a million-dollar math problem'}
                   {type === 'prize' &&
-                    title.includes('Arc AGI') &&
-                    'Probability of claiming Arc-AGI prize'}
+                    title.includes('ARC-AGI') &&
+                    'Chance of claiming the ARC-AGI grand prize'}
                   {type === 'prize' &&
                     title.includes('Turing Test') &&
-                    'Probability of passing this variation of the Turing Test'}
+                    'Chance of passing Long Bets variation of the Turing Test'}
                   {type === 'misuse' &&
                     title.includes('Hacking') &&
                     'Probability of AI compromising systems by end of 2025'}
@@ -1274,24 +1274,6 @@ export function AIForecast({
           key={type}
           id={type}
         >
-          {!hideSectionTitles && (
-            <div className="mb-3">
-              <Row className="items-center justify-between">
-                <div>
-                  <h3
-                    className={`items-center gap-1 text-2xl font-semibold sm:text-3xl ${getAccentColor(
-                      type
-                    )}`}
-                  >
-                    {typeInfo[type].label}
-                  </h3>
-                  <p className="text-ink-500 mt-1 text-sm">
-                    {typeInfo[type].description}
-                  </p>
-                </div>
-              </Row>
-            </div>
-          )}
 
           {type === 'releases' ? (
             // Display releases on a timeline
