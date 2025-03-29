@@ -98,14 +98,14 @@ export type AICapabilityCard = {
 export const AI_CAPABILITY_CARDS: AICapabilityCard[] = [
   // Monthly markets
   {
-    title: 'LMSYS',
+    title: 'LMSYS (April)',
     description: 'Highest ranked model on lmsys',
     marketId: 'LsZPyLPI82',
     type: 'monthly',
     displayType: 'top-two-mcq',
   },
   {
-    title: 'AiderBench',
+    title: 'AiderBench (April)',
     description: 'Highest ranked model on Aider',
     marketId: 'QuqA2uAALL',
     type: 'monthly',
@@ -1261,14 +1261,6 @@ export function AIForecast({
 
   return (
     <Col className="mb-8 gap-4 px-1 sm:gap-6 sm:px-2">
-      <Col className={hideTitle ? 'hidden' : ''}>
-        <div className="text-primary-700 mt-4 text-2xl font-normal sm:mt-0 sm:text-3xl">
-          Manifold AI Forecast
-        </div>
-        <div className="text-ink-500 text-md mt-2 flex font-normal">
-          Manifold market odds on AI progress
-        </div>
-      </Col>
 
       {/* Card Categories */}
       {orderedSections.map((type, index) => (
@@ -1285,7 +1277,7 @@ export function AIForecast({
             <Row className="items-center justify-between">
               <div>
                 <h3
-                  className={`items-center gap-1 text-xl font-semibold ${getAccentColor(
+                  className={`items-center gap-1 text-2xl font-semibold sm:text-3xl ${getAccentColor(
                     type
                   )}`}
                 >
@@ -1295,14 +1287,6 @@ export function AIForecast({
                   {typeInfo[type].description}
                 </p>
               </div>
-              <Link
-                href={`#${type}`}
-                className="text-primary-500 hover:text-primary-700 hover:bg-primary-50 flex items-center justify-center rounded-full p-2 transition-all duration-200"
-                scroll={false}
-                aria-label={`Link to ${typeInfo[type].label} section`}
-              >
-                <LuLink size={18} />
-              </Link>
             </Row>
           </div>
 
