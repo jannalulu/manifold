@@ -1081,16 +1081,11 @@ function ModelReleasesTimeline({
   }
 
   return (
-    <div>
-      <div className="text-fuchsia-700 dark:text-fuchsia-500 mb-2 text-xl font-bold pl-2">
-        Releases
-      </div>
-      <TimelineCard
-        items={timelineItems}
-        lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
-        backgroundColor="bg-fuchsia-50 dark:bg-fuchsia-800/20"
-      />
-    </div>
+    <TimelineCard
+      items={timelineItems}
+      lineColor="bg-fuchsia-700 dark:bg-fuchsia-500"
+      backgroundColor="bg-fuchsia-50 dark:bg-fuchsia-800/20"
+    />
   )
 }
 
@@ -1150,11 +1145,11 @@ function FeaturedMarketGraph({ contract }: FeaturedGraphProps) {
       <div className="mt-4 mb-4 w-full">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-sm text-primary-600 dark:text-primary-400">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {' '}
               Probability:
             </span>{' '}
-            <span className="text-2xl font-semibold text-primary-700 dark:text-primary-200">
+            <span className="text-2xl font-semibold text-fuchsia-600 dark:text-fuchsia-500">
               {formatPercent(contract.prob ?? 0.5)}
             </span>
           </div>
